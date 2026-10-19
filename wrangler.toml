@@ -1,6 +1,6 @@
 # wrangler.toml
 name = 'en77275vqhr88174nha'
-main = "worker.js"
+main = "index.html"
 compatibility_date = "2026-10-19"
 
 [observability]
