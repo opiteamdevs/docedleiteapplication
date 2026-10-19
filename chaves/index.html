@@ -11,8 +11,8 @@
 </head>
 <body>
   <main class="card">
-    <h1>🔐 Minhas chaves privadas</h1>
-    <p>A chave é criada no servidor e nunca é mostrada nesta página. Ela é guardada cifrada no banco de dados.</p>
+    <h1>🔑 Minhas chaves privadas</h1>
+    <p>A chave é criada no servidor e nunca é mostrada nesta página. Ela é guardada diretamente no banco de dados.</p>
     <section class="status" aria-live="polite">
       <div class="stats"><span>Status</span><span id="key-state">Verificando…</span></div>
       <div class="stats"><span>Usos contabilizados</span><span id="key-used">—</span></div>
@@ -21,7 +21,7 @@
     </section>
     <button id="refresh" type="button">Atualizar / ativar chave</button>
     <div class="msg" id="msg" role="status"></div>
-    <p><small>Por segurança, esta tela não revela a chave original nem permite recuperar o segredo cifrado.</small></p>
+    <p><small>Por segurança, esta tela não revela a chave original.</small></p>
     <a href="/fyp/">← Voltar ao Doce de Leite</a>
   </main>
   <script type="module">
