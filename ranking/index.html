@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hall da Fama & Ranking - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            min-height: 100vh;
+            border-left: 2px solid #d7ccc8;
+            border-right: 2px solid #d7ccc8;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        header h1 { font-size: 1.2rem; color: #8d6e63; width: 100%; }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: #6d4c41;
+            margin-bottom: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Banner Supremo */
+        .banner-supremo {
+            background: linear-gradient(135deg, #fff8e1, #ffe0b2);
+            border: 2px solid #ffa726;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+        }
+        .pudim-emoji { font-size: 3rem; margin-bottom: 6px; }
+        .campeao-title { font-size: 0.85rem; color: #e65100; text-transform: uppercase; font-weight: bold; margin-bottom: 4px; }
+        .campeao-name { font-size: 1.5rem; color: #d84315; font-weight: bold; margin-bottom: 10px; text-decoration: none; display: inline-block; }
+        .campeao-name:hover { text-decoration: underline; }
+        .selos-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .selo-badge {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+            color: #e65100;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* Caixa de Alerta do Top 1 Logado */
+        .alerta-top1 {
+            background: #e8f5e9;
+            border: 2px solid #66bb6a;
+            color: #2e7d32;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(102, 187, 106, 0.15);
+        }
+
+        /* Listas (Ranking & Setembro) */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #faf8f5;
+            border: 1px solid #d7ccc8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+        }
+        .ranking-item:hover { background: #f5f0eb; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .position { font-weight: bold; font-size: 1.1rem; color: #8d6e63; width: 25px; text-align: center; }
+        .username { font-weight: bold; color: #3e2723; }
+        .candies { color: #d84315; font-weight: bold; font-size: 0.95rem; }
+
+        /* Spinner */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 4px solid #f5f0eb;
+            border-top: 4px solid #8d6e63;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        nav {
+            display: flex;
+            border-top: 2px solid #d7ccc8;
+            background: #fff;
+            position: sticky;
+            bottom: 0;
+        }
+        nav a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            color: #8d6e63;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        nav a:hover, nav a.active { background-color: #f5f0eb; color: #3e2723; }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🏆 Hall da Fama & Ranking</h1>
+        </header>
+
+        <div class="content">
+            
+            <!-- 1. DOCE DE LEITE SUPREMO (Aparece de 20/Dez a 10/Jan) -->
+            <div id="wrapper-supremo" style="display: none;">
+                <div class="section-title">👑 Doce de Leite Supremo (Anual)</div>
+                <div class="banner-supremo" id="supremo-container">
+                    <div class="loading-container"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- 2. ESPECIAL DE SETEMBRO (Visível APENAS em Setembro) -->
+            <div id="wrapper-setembro" style="display: none;">
+                <div class="section-title">🍂 Hall de Setembro (Mês de Ouro do DL)</div>
+                <div id="msg-topo-setembro"></div>
+                <div class="ranking-list" id="ranking-setembro">
+                    <div class="loading-container"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- 3. RANKING GERAL DE DOCES DO MÊS (Visível nos outros meses) -->
+            <div id="wrapper-geral" style="display: none;">
+                <div class="section-title">🍬 Ranking de Doces do Mês</div>
+                <div id="msg-topo-geral"></div>
+                <div class="ranking-list" id="ranking-geral">
+                    <div class="loading-container"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+        </div>
+<nav> <a href="/fyp/">Início</a> <a href="/createpost/">Criar Post</a> <a href="#" id="nav-meu-perfil">Meu Perfil</a> 
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        async function carregarTudo() {
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth(); // 0 = Jan, 8 = Set, 11 = Dez
+            const diaAtual = hoje.getDate();
+
+            // Pega o usuário logado para poder checar se é ele no topo
+            const { data: { session } } = await supabase.auth.getSession();
+            const usuarioLogadoId = session && session.user ? session.user.id : null;
+
+            // Regra 1: Supremo Anual (Entre 20/Dez e 10/Jan)
+            const estamosNoPeriodoDoSupremo = (mesAtual === 11 && diaAtual >= 20) || (mesAtual === 0 && diaAtual <= 10);
+            if (estamosNoPeriodoDoSupremo) {
+                document.getElementById('wrapper-supremo').style.display = 'block';
+                await carregarSupremoAnual();
+            }
+
+            // Regra 2: Setembro vs Outros Meses
+            if (mesAtual === 8) {
+                document.getElementById('wrapper-setembro').style.display = 'block';
+                document.getElementById('wrapper-geral').style.display = 'none';
+                await carregarRankingSetembro(usuarioLogadoId);
+            } else {
+                document.getElementById('wrapper-setembro').style.display = 'none';
+                document.getElementById('wrapper-geral').style.display = 'block';
+                await carregarRankingGeral(usuarioLogadoId);
+            }
+        }
+
+        // 1. Supremo Anual
+        async function carregarSupremoAnual() {
+            const container = document.getElementById('supremo-container');
+            try {
+                const umAnoAtras = new Date();
+                umAnoAtras.setFullYear(umAnoAtras.getFullYear() - 1);
+
+                const { data: postsAnuais } = await supabase
+                    .from('posts')
+                    .select('creator, like, comments, created_at')
+                    .gte('created_at', umAnoAtras.toISOString());
+
+                if (!postsAnuais || postsAnuais.length === 0) {
+                    container.innerHTML = `<p style="color: #6d4c41; font-size: 0.9rem;">Ainda sem dados para o Supremo deste ano!</p>`;
+                    return;
+                }
+
+                const pontuacoes = {};
+                postsAnuais.forEach(post => {
+                    if (!post.creator) return;
+                    const l = Array.isArray(post.like) ? post.like.length : 0;
+                    const c = Array.isArray(post.comments) ? post.comments.length : 0;
+                    pontuacoes[post.creator] = (pontuacoes[post.creator] || 0) + (l + (c * 2));
+                });
+
+                let campeaoId = null;
+                let maior = -1;
+                for (const [id, pts] of Object.entries(pontuacoes)) {
+                    if (pts > maior) { maior = pts; campeaoId = id; }
+                }
+
+                if (!campeaoId) return;
+
+                const { data: perfil } = await supabase.from('profiles').select('username').eq('id', campeaoId).single();
+                if (!perfil) return;
+
+                container.innerHTML = `
+                    <div class="pudim-emoji">🍮👑</div>
+                    <div class="campeao-title">O Grande Campeão do Ano</div>
+                    <a href="/u/?q=${encodeURIComponent(perfil.username)}" class="campeao-name">@${escapeHtml(perfil.username)}</a>
+                    <p style="color: #6d4c41; font-size: 0.85rem; margin-bottom: 8px;">Maior destaque do caldeirão nos últimos 365 dias!</p>
+                    <div class="selos-container">
+                        <span class="selo-badge">🍮 O Pudim</span>
+                        <span class="selo-badge">👑 Verificado Supremo</span>
+                        <span class="selo-badge">🛡️ Selo de Guerreiro</span>
+                    </div>
+                `;
+            } catch (err) {
+                container.innerHTML = `<p style="color: red; font-size: 0.85rem;">Erro ao carregar o Supremo.</p>`;
+            }
+        }
+
+        // 2. Ranking de Setembro
+        async function carregarRankingSetembro(usuarioLogadoId) {
+            const container = document.getElementById('ranking-setembro');
+            const msgBox = document.getElementById('msg-topo-setembro');
+            try {
+                const { data: perfis } = await supabase
+                    .from('profiles')
+                    .select('id, username, candys_count')
+                    .order('candys_count', { ascending: false })
+                    .limit(10);
+
+                if (!perfis || perfis.length === 0) {
+                    container.innerHTML = `<p style="color: #6d4c41; font-size: 0.9rem; text-align:center;">Nenhum registro em setembro ainda.</p>`;
+                    return;
+                }
+
+                // Verifica se o usuário logado é o primeiro da lista
+                if (usuarioLogadoId && perfis[0].id === usuarioLogadoId) {
+                    msgBox.innerHTML = `<div class="alerta-top1">🎉 Parabéns, mantenha sua posição pra ganhar nesse caos! 🍬🚀</div>`;
+                } else {
+                    msgBox.innerHTML = '';
+                }
+
+                let html = '';
+                perfis.forEach((u, i) => {
+                    let pos = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+                    html += `
+                        <a href="/u/?q=${encodeURIComponent(u.username)}" class="ranking-item">
+                            <div class="user-info">
+                                <span class="position">${pos}</span>
+                                <span class="username">@${escapeHtml(u.username)}</span>
+                            </div>
+                            <div class="candies">${u.candys_count || 0} 🍬</div>
+                        </a>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<p style="color: red; font-size: 0.85rem;">Erro ao carregar Setembro.</p>`;
+            }
+        }
+
+        // 3. Ranking Geral de Doces do Mês
+        async function carregarRankingGeral(usuarioLogadoId) {
+            const container = document.getElementById('ranking-geral');
+            const msgBox = document.getElementById('msg-topo-geral');
+            try {
+                const { data: perfis } = await supabase
+                    .from('profiles')
+                    .select('id, username, candys_count')
+                    .order('candys_count', { ascending: false })
+                    .limit(10);
+
+                if (!perfis || perfis.length === 0) {
+                    container.innerHTML = `<p style="color: #6d4c41; font-size: 0.9rem; text-align:center;">Nenhum doce distribuído ainda.</p>`;
+                    return;
+                }
+
+                // Verifica se o usuário logado é o primeiro da lista
+                if (usuarioLogadoId && perfis[0].id === usuarioLogadoId) {
+                    msgBox.innerHTML = `<div class="alerta-top1">🎉 Parabéns, mantenha sua posição pra ganhar nesse caos! 🍬🚀</div>`;
+                } else {
+                    msgBox.innerHTML = '';
+                }
+
+                let html = '';
+                perfis.forEach((u, i) => {
+                    let pos = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+                    html += `
+                        <a href="/u/?q=${encodeURIComponent(u.username)}" class="ranking-item">
+                            <div class="user-info">
+                                <span class="position">${pos}</span>
+                                <span class="username">@${escapeHtml(u.username)}</span>
+                            </div>
+                            <div class="candies">${u.candys_count || 0} 🍬</div>
+                        </a>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<p style="color: red; font-size: 0.85rem;">Erro ao carregar o ranking.</p>`;
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        carregarTudo();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Você (FYP) - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .verified-badge {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            display: inline-block;
+            vertical-align: -2px;
+            margin-left: 4px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            min-height: 100vh;
+            border-left: 2px solid #d7ccc8;
+            border-right: 2px solid #d7ccc8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: #8d6e63;
+        }
+
+        .filters-bar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 20px;
+            background-color: #faf8f5;
+            border-bottom: 1px solid #d7ccc8;
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            background: #ffffff;
+            border: 1px solid #d7ccc8;
+            color: #8d6e63;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background-color: #f5f0eb;
+            color: #3e2723;
+        }
+
+        .filter-btn.active {
+            background-color: #8d6e63;
+            color: #ffffff;
+            border-color: #8d6e63;
+        }
+
+        .feed {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 60px;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #f5f0eb;
+            border-top: 4px solid #8d6e63;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .post-card {
+            background: #ffffff;
+            border: 1px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 5px rgba(111, 78, 55, 0.05);
+            position: relative;
+        }
+
+        .post-card.is-ad {
+            border: 2px solid #ffb74d;
+            background: #fff8e1;
+        }
+
+        .ad-badge {
+            font-size: 0.75rem;
+            background: #ffb74d;
+            color: #3e2723;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #6d4c41;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .post-author:hover {
+            text-decoration: underline;
+        }
+
+        .post-content {
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #3e2723;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #8d6e63;
+            border-top: 1px solid #f5f0eb;
+            padding-top: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #8d6e63;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .action-btn:hover {
+            color: #6d4c41;
+        }
+
+        .action-btn.liked {
+            color: #d32f2f;
+        }
+
+        .empty-feed {
+            text-align: center;
+            color: #8d6e63;
+            margin-top: 40px;
+            font-size: 0.95rem;
+        }
+
+        nav {
+            display: flex;
+            border-top: 2px solid #d7ccc8;
+            background: #fff;
+            position: sticky;
+            bottom: 0;
+        }
+
+        nav a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            color: #8d6e63;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background-color: #f5f0eb;
+            color: #3e2723;
+        }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>🍮 Doce de Leite</h1>
+        </header>
+
+        <div class="filters-bar">
+            <button class="filter-btn active" onclick="mudarFiltro('novidades', this)">
+                ✨ Novidades!
+            </button>
+
+            <button class="filter-btn" onclick="mudarFiltro('popular', this)">
+                🔥 Mais popular
+            </button>
+
+            <button class="filter-btn" onclick="mudarFiltro('media', this)">
+                ⚖️ Na média
+            </button>
+        </div>
+
+        <div class="feed" id="feed-container">
+            <div class="loading-container">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <nav>
+            <a href="/fyp/" class="active">Início</a>
+            <a href="/createpost/">Criar Post</a>
+            <a href="#" id="nav-meu-perfil">Meu Perfil</a>
+        </nav>
+
+    </div>
+
+    <script type="module">
+
+        import {
+            createClient
+        } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+        import { ensurePrivateApiKey } from '/api-keys.js';
+
+
+
+
+        const supabase = createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY,
+            {
+                auth: {
+                    storage: window.localStorage,
+                    persistSession: true,
+                    autoRefreshToken: true
+                }
+            }
+        );
+
+
+        let usuarioLogado = null;
+        let postsGlobais = [];
+        let perfisGlobais = {};
+        let filtroAtual = 'novidades';
+
+
+        const listaNegraPalavras = [
+            "spam", "scam", "phishing", "hack", "hacker", "cracker", "bot",
+            "gratis", "free", "ganhedinheiro", "rendaextra", "trabalheemcasa",
+            "aposta", "bet", "cassino", "slot", "tigrinho", "fortune",
+            "dinheirofacil", "trader", "sinal", "telegram.me", "t.me",
+            "porn", "sex", "xxx", "nude", "nudes", "18+", "conteudoadulto",
+            "idiota", "imbecil", "estupido", "burro", "otario", "patife",
+            "canalha", "lixo", "desgraçado", "maldito", "filhodaputa",
+            "puta", "caralho", "merda", "bosta", "porra", "arrombado",
+            "corno", "vagabundo", "golpe", "piramide"
+        ];
+
+
+        function verificarConteudoProibido(texto) {
+
+            const textoFormatado = texto.toLowerCase();
+
+            for (let palavra of listaNegraPalavras) {
+
+                const regex = new RegExp(`\\b${palavra}\\b`, 'i');
+
+                if (
+                    regex.test(textoFormatado) ||
+                    textoFormatado.includes(palavra)
+                ) {
+                    return {
+                        detected: "blocknow()"
+                    };
+                }
+            }
+
+            return null;
+        }
+
+
+        async function initFYP() {
+
+            const navMeuPerfil =
+                document.getElementById('nav-meu-perfil');
+
+            const {
+                data: {
+                    session
+                }
+            } = await supabase.auth.getSession();
+
+
+            if (session && session.user) {
+                usuarioLogado = session.user;
+                try { await ensurePrivateApiKey(supabase); }
+                catch (keyError) { console.error('Chave privada:', keyError); }
+
+
+                const {
+                    data: perfil
+                } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', usuarioLogado.id)
+                    .single();
+
+
+                if (perfil) {
+
+                    let age_verified =
+                        perfil.age_verified;
+
+                    if (age_verified !== true) {
+
+                        window.location.href =
+                            "https://m.docedleite.com.br/verifyage";
+
+                        return;
+                    }
+
+
+                    if (navMeuPerfil) {
+
+                        navMeuPerfil.href =
+                            `/u/?q=${encodeURIComponent(
+                                perfil.username
+                            )}`;
+                    }
+                }
+            }
+
+
+            await carregarDadosDoBanco();
+        }
+
+
+        async function carregarDadosDoBanco() {
+
+            const feedContainer =
+                document.getElementById('feed-container');
+
+
+            // Cada atualização carrega apenas uma parte do FYP:
+            // 6 posts normais + até 3 anúncios.
+            // A limitação acontece no banco para não baixar o feed inteiro.
+            const [
+                { data: postsNormais, error: erroPosts },
+                { data: anuncios, error: erroAnuncios }
+            ] = await Promise.all([
+                supabase
+                    .from('posts')
+                    .select('*')
+                    .eq('isddlAd', false)
+                    .order('created_at', { ascending: false })
+                    .limit(6),
+                supabase
+                    .from('posts')
+                    .select('*')
+                    .eq('isddlAd', true)
+                    .order('created_at', { ascending: false })
+                    .limit(3)
+            ]);
+
+            const error = erroPosts || erroAnuncios;
+
+            if (error) {
+                feedContainer.innerHTML =
+                    `<div class="empty-feed">
+                        Erro ao carregar:
+                        ${escapeHtml(error.message)}
+                    </div>`;
+                return;
+            }
+
+            const posts = [
+                ...(postsNormais || []),
+                ...(anuncios || [])
+            ];
+
+            if (posts.length === 0) {
+
+                feedContainer.innerHTML =
+                    `<div class="empty-feed">
+                        Ainda não há publicações.
+                        Seja o primeiro a postar!
+                    </div>`;
+
+                return;
+            }
+
+
+            postsGlobais = posts;
+
+
+            const creatorIds = [
+                ...new Set(
+                    posts.map(p => p.creator)
+                )
+            ];
+
+
+            const {
+                data: perfisAutores
+            } = await supabase
+                .from('profiles')
+                .select('id, username, is_verified')
+                .in('id', creatorIds);
+
+
+            perfisGlobais = {};
+
+
+            if (perfisAutores) {
+
+                perfisAutores.forEach(p => {
+                    perfisGlobais[p.id] = p;
+                });
+
+            }
+
+
+            renderizarFeed();
+        }
+
+
+        window.mudarFiltro = function (
+            tipo,
+            elementoBtn
+        ) {
+
+            if (filtroAtual === tipo)
+                return;
+
+
+            filtroAtual = tipo;
+
+
+            document
+                .querySelectorAll('.filter-btn')
+                .forEach(btn =>
+                    btn.classList.remove('active')
+                );
+
+
+            elementoBtn.classList.add('active');
+
+            renderizarFeed();
+        };
+
+
+        function renderizarFeed() {
+
+            const feedContainer =
+                document.getElementById('feed-container');
+
+
+            if (!postsGlobais.length)
+                return;
+
+
+            let postsOriginais =
+                [...postsGlobais];
+
+
+            if (filtroAtual === 'popular') {
+
+                postsOriginais.sort(
+                    (a, b) =>
+                        ((b.like?.length || 0) -
+                        (a.like?.length || 0))
+                );
+
+            } else if (filtroAtual === 'media') {
+
+                const totalLikes =
+                    postsOriginais.reduce(
+                        (acc, p) =>
+                            acc + (p.like?.length || 0),
+                        0
+                    );
+
+
+                const mediaLikes =
+                    postsOriginais.length
+                        ? totalLikes /
+                          postsOriginais.length
+                        : 0;
+
+
+                postsOriginais.sort(
+                    (a, b) =>
+                        Math.abs(
+                            (a.like?.length || 0) -
+                            mediaLikes
+                        ) -
+                        Math.abs(
+                            (b.like?.length || 0) -
+                            mediaLikes
+                        )
+                );
+
+            } else if (filtroAtual === 'novidades') {
+
+                postsOriginais.sort(
+                    (a, b) =>
+                        new Date(
+                            b.created_at || 0
+                        ) -
+                        new Date(
+                            a.created_at || 0
+                        )
+                );
+            }
+
+
+            const postsNormais =
+                postsOriginais.filter(
+                    p => !p.isddlAd
+                );
+
+
+            const anuncios =
+                postsOriginais.filter(
+                    p => p.isddlAd
+                );
+
+
+            let postsProcessados = [];
+
+            let iN = 0;
+            let iA = 0;
+
+
+            while (iN < postsNormais.length) {
+
+                postsProcessados.push(
+                    postsNormais[iN++]
+                );
+
+
+                if (iN < postsNormais.length) {
+
+                    postsProcessados.push(
+                        postsNormais[iN++]
+                    );
+                }
+
+
+                if (anuncios.length) {
+
+                    postsProcessados.push(
+                        anuncios[
+                            iA++ % anuncios.length
+                        ]
+                    );
+                }
+            }
+
+
+            feedContainer.innerHTML = '';
+
+
+            postsProcessados.forEach(post => {
+
+                const autor =
+                    perfisGlobais[post.creator] ||
+                    {
+                        username: 'desconhecido',
+                        is_verified: false
+                    };
+
+
+                // NULL, false ou qualquer valor diferente de true
+                // é tratado como post normal.
+                const ehAnon =
+                    post.isAnon === true;
+
+
+                const nomeAutor =
+                    ehAnon
+                        ? 'anon'
+                        : autor.username;
+
+
+                const seloVerificado =
+                    (!ehAnon && autor.is_verified)
+                        ? `<img
+                            src="/verify.png"
+                            alt="Verificado"
+                            class="verified-badge"
+                           >`
+                        : '';
+
+
+                const likesArray =
+                    post.like || [];
+
+
+                const euCurti =
+                    usuarioLogado
+                        ? likesArray.includes(
+                            usuarioLogado.id
+                        )
+                        : false;
+
+
+                const comentariosArray =
+                    post.comments || [];
+
+
+                const ehAd =
+                    post.isddlAd === true;
+
+
+                const card =
+                    document.createElement('div');
+
+
+                card.className =
+                    `post-card ${
+                        ehAd ? 'is-ad' : ''
+                    }`;
+
+
+                let autorHTML;
+
+
+                if (ehAd) {
+
+                    autorHTML =
+                        '<div class="ad-badge">' +
+                        'Patrocinado' +
+                        '</div>';
+
+                } else if (ehAnon) {
+
+                    // Post anônimo: não possui link para o perfil.
+                    autorHTML =
+                        `<span class="post-author">@anon</span>`;
+
+                } else {
+
+                    autorHTML =
+                        `<a
+                            href="/u/?q=${encodeURIComponent(
+                                autor.username
+                            )}"
+                            class="post-author"
+                        >
+                            @${escapeHtml(
+                                autor.username
+                            )}${seloVerificado}
+                        </a>`;
+                }
+
+
+                card.innerHTML = `
+
+                    ${autorHTML}
+
+                    <div class="post-content">
+                        ${escapeHtml(post.title)}
+                    </div>
+
+                    <div class="post-actions">
+
+                        <button
+                            class="action-btn ${
+                                euCurti ? 'liked' : ''
+                            }"
+                            onclick="curtirPost(${post.id})"
+                        >
+                            ❤️
+                            <span>
+                                ${likesArray.length}
+                            </span>
+                        </button>
+
+
+                        <button
+                            class="action-btn"
+                            onclick="toggleComentarios(${post.id})"
+                        >
+                            💬
+                            <span>
+                                ${comentariosArray.length}
+                            </span>
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="comments-section-${post.id}"
+                        style="
+                            display: none;
+                            margin-top: 12px;
+                            border-top: 1px dashed #d7ccc8;
+                            padding-top: 10px;
+                        "
+                    >
+
+                        <div
+                            id="comments-list-${post.id}"
+                            style="
+                                max-height: 150px;
+                                overflow-y: auto;
+                                margin-bottom: 8px;
+                                font-size: 0.9rem;
+                            "
+                        >
+
+                            <div
+                                class="loading-container"
+                                style="margin-top: 5px;"
+                            >
+                                <div
+                                    class="spinner"
+                                    style="
+                                        width: 24px;
+                                        height: 24px;
+                                        border-width: 3px;
+                                    "
+                                ></div>
+                            </div>
+
+                        </div>
+
+
+                        ${
+    ehAd
+        ? `
+            <div
+                style="
+                    color: #8d6e63;
+                    font-size: 0.85rem;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 6px;
+                "
+            >
+                🚫 Comentários desativados para anúncios.
+            </div>
+        `
+        : `
+            <div
+                style="
+                    display: flex;
+                    gap: 8px;
+                "
+            >
+
+                <input
+                    type="text"
+                    id="comment-input-${post.id}"
+                    placeholder="Escreva um comentário..."
+                    style="
+                        flex: 1;
+                        padding: 6px 10px;
+                        border: 1px solid #d7ccc8;
+                        border-radius: 6px;
+                        font-size: 0.85rem;
+                        outline: none;
+                    "
+                >
+
+                <button
+                    onclick="enviarComentario(${post.id})"
+                    style="
+                        padding: 6px 12px;
+                        background: #8d6e63;
+                        color: white;
+                        border: none;
+                        border-radius: 6px;
+                        font-size: 0.85rem;
+                        cursor: pointer;
+                    "
+                >
+                    Enviar
+                </button>
+
+            </div>
+        `
+}
+
+</div>
+`;
+
+feedContainer.appendChild(card);
+
+});
+}
+
+
+window.curtirPost = async function(postId) {
+
+    if (!usuarioLogado) {
+        alert("Faça login para curtir!");
+        window.location.href = '/acesso/login/';
+        return;
+    }
+
+    const post = postsGlobais.find(
+        p => p.id === postId
+    );
+
+    if (!post) return;
+
+    let likes = [...(post.like || [])];
+
+    if (likes.includes(usuarioLogado.id)) {
+
+        likes = likes.filter(
+            id => id !== usuarioLogado.id
+        );
+
+    } else {
+
+        likes.push(usuarioLogado.id);
+    }
+
+    post.like = likes;
+
+    renderizarFeed();
+
+    await supabase
+        .from('posts')
+        .update({
+            like: likes
+        })
+        .eq('id', postId);
+};
+
+
+window.toggleComentarios = async function(postId) {
+
+    const section = document.getElementById(
+        `comments-section-${postId}`
+    );
+
+    if (!section) return;
+
+    const abrir =
+        section.style.display === 'none';
+
+    section.style.display =
+        abrir ? 'block' : 'none';
+
+    if (abrir) {
+        await carregarComentariosNoCard(postId);
+    }
+};
+
+
+async function carregarComentariosNoCard(postId) {
+
+    const listContainer = document.getElementById(
+        `comments-list-${postId}`
+    );
+
+    if (!listContainer) return;
+
+    const post = postsGlobais.find(
+        p => p.id === postId
+    );
+
+    const comentarios = post?.comments || [];
+
+    if (comentarios.length === 0) {
+
+        listContainer.innerHTML =
+            '<div style="color: #8d6e63; font-size: 0.85rem; font-style: italic;">Nenhum comentário ainda.</div>';
+
+        return;
+    }
+
+    listContainer.innerHTML =
+        comentarios.map(c => `
+            <div style="margin-bottom: 6px;">
+                <strong>
+                    @${escapeHtml(c.username)}:
+                </strong>
+                ${escapeHtml(c.text)}
+            </div>
+        `).join('');
+}
+
+
+window.enviarComentario = async function(postId) {
+
+    if (!usuarioLogado) {
+
+        alert("Faça login para comentar!");
+
+        window.location.href =
+            '/acesso/login/';
+
+        return;
+    }
+
+    const postRef = postsGlobais.find(
+        p => p.id === postId
+    );
+
+    if (postRef && postRef.isddlAd)
+        return;
+
+    const input = document.getElementById(
+        `comment-input-${postId}`
+    );
+
+    const textoComentario =
+        input.value.trim();
+
+    if (!textoComentario)
+        return;
+
+    if (
+        verificarConteudoProibido(
+            textoComentario
+        )
+    ) {
+
+        alert(
+            "⚠️ Comentário barrado pelas diretrizes."
+        );
+
+        return;
+    }
+
+    const {
+        data: perfil
+    } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq(
+            'id',
+            usuarioLogado.id
+        )
+        .single();
+
+    const usernameAtual =
+        perfil
+            ? perfil.username
+            : 'anonimo';
+
+    const novoComentario = {
+
+        user_id:
+            usuarioLogado.id,
+
+        username:
+            usernameAtual,
+
+        text:
+            textoComentario,
+
+        created_at:
+            new Date().toISOString()
+    };
+
+    if (!postRef.comments)
+        postRef.comments = [];
+
+    postRef.comments.push(
+        novoComentario
+    );
+
+    input.value = '';
+
+    await carregarComentariosNoCard(
+        postId
+    );
+
+    renderizarFeed();
+
+    await supabase
+        .from('posts')
+        .update({
+            comments:
+                postRef.comments
+        })
+        .eq(
+            'id',
+            postId
+        );
+};
+
+
+function escapeHtml(str) {
+
+    if (!str)
+        return '';
+
+    return String(str).replace(
+        /[&<>'"]/g,
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
+
+
+initFYP();
+
+</script>
+
+</body>
+</html>
+   

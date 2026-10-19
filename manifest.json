@@ -1,0 +1,27 @@
+{
+  "name": "Doce de Leite",
+  "short_name": "Doce de Leite",
+  "description": "Rede Social Doce de Leite",
+  "start_url": "https://m.docedleite.com.br/",
+  "scope": "https://m.docedleite.com.br/",
+  "id": "https://m.docedleite.com.br/",
+  "display": "standalone",
+  "background_color": "#FFE9B7",
+  "theme_color": "#FFE9B7",
+  "orientation": "portrait-primary",
+  "categories": ["social", "entertainment"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

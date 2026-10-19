@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Criar Publicação - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            min-height: 100vh;
+            border-left: 2px solid #d7ccc8;
+            border-right: 2px solid #d7ccc8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: #8d6e63;
+        }
+
+        header a {
+            color: #8d6e63;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .post-card {
+            background: #faf8f5;
+            border: 2px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .post-card h2 {
+            font-size: 1.1rem;
+            color: #6d4c41;
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            resize: none;
+            height: 140px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+            color: #3e2723;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #6d4c41;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: #8d6e63;
+            cursor: pointer;
+        }
+
+        .anon-option {
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .anon-option .checkbox-container {
+            margin-bottom: 0;
+        }
+
+        .anon-info {
+            margin-top: 7px;
+            margin-left: 28px;
+            font-size: 0.82rem;
+            color: #8d6e63;
+            line-height: 1.35;
+            font-weight: normal;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #8d6e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #6d4c41;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        nav {
+            display: flex;
+            border-top: 2px solid #d7ccc8;
+            background: #fff;
+            position: sticky;
+            bottom: 0;
+        }
+
+        nav a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            color: #8d6e63;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background-color: #f5f0eb;
+            color: #3e2723;
+        }
+
+        .login-required {
+            text-align: center;
+            padding: 28px 20px;
+        }
+
+        .login-required h2 {
+            color: #6d4c41;
+            margin-bottom: 10px;
+        }
+
+        .login-required p {
+            color: #6d4c41;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .login-form button {
+            margin-top: 4px;
+        }
+
+        .login-msg {
+            min-height: 22px;
+            margin-top: 8px;
+            text-align: center;
+            color: #d9534f;
+            font-size: .9rem;
+        }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            color: #8d6e63;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>🍮 Doce de Leite</h1>
+    </header>
+
+    <div class="content">
+
+        <div class="post-card">
+
+            <h2>O que está acontecendo no caldeirão?</h2>
+
+            <textarea
+                id="post-text"
+                placeholder="Compartilhe seus pensamentos com a comunidade..."
+            ></textarea>
+
+            <label class="checkbox-container">
+                <input type="checkbox" id="check-ddl-ad">
+                Destacar como anúncio
+            </label>
+
+            <!-- NOVA OPÇÃO DE ANONIMATO -->
+            <div class="anon-option">
+
+                <label class="checkbox-container">
+                    <input type="checkbox" id="check-anon">
+                    Publicar anonimamente como @anon
+                </label>
+
+                <div class="anon-info">
+                    Seu post aparecerá para a comunidade como <strong>@anon</strong>.
+                </div>
+
+            </div>
+
+            <button id="btn-publicar">
+                Publicar no Feed
+            </button>
+
+        </div>
+
+    </div>
+
+    <nav>
+        <a href="/fyp/">Início</a>
+
+        <a href="/createpost/" class="active">
+            Criar Post
+        </a>
+
+        <a href="#" id="nav-meu-perfil">
+            Meu Perfil
+        </a>
+    </nav>
+
+</div>
+
+<script type="module">
+
+    import {
+        createClient
+    } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+        import { ensurePrivateApiKey } from '/api-keys.js';
+
+
+
+    const supabase =
+        createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    let usuarioLogado = null;
+
+
+    const listaNegraPalavras = [
+        "spam", "scam", "phishing", "hack", "hacker", "cracker", "bot",
+        "gratis", "free", "ganhedinheiro", "rendaextra", "trabalheemcasa",
+        "aposta", "bet", "cassino", "slot", "tigrinho", "fortune",
+        "dinheirofacil", "trader", "sinal", "telegram.me", "t.me",
+        "porn", "sex", "xxx", "nude", "nudes", "18+", "conteudoadulto",
+        "idiota", "imbecil", "estupido", "burro", "otario", "patife",
+        "canalha", "lixo", "desgraçado", "maldito", "filhodaputa",
+        "puta", "caralho", "merda", "bosta", "porra", "arrombado",
+        "corno", "vagabundo", "golpe", "piramide"
+    ];
+
+
+    function verificarConteudoProibido(texto) {
+
+        const textoFormatado =
+            texto.toLowerCase();
+
+        for (let palavra of listaNegraPalavras) {
+
+            const regex =
+                new RegExp(`\\b${palavra}\\b`, 'i');
+
+            if (
+                regex.test(textoFormatado) ||
+                textoFormatado.includes(palavra)
+            ) {
+
+                return {
+                    detected: "blocknow()",
+                    Violation: "violation of guidelines"
+                };
+
+            }
+        }
+
+        return null;
+    }
+
+
+    function mostrarLogin() {
+
+        const content =
+            document.querySelector('.content');
+
+        content.innerHTML = `
+
+            <div class="post-card login-required">
+
+                <h2>
+                    Faça login para continuar 🍮
+                </h2>
+
+                <p>
+                    Você precisa estar logado para criar uma publicação.
+                </p>
+
+                <form
+                    class="login-form"
+                    id="login-required-form"
+                >
+
+                    <input
+                        type="email"
+                        id="login-email"
+                        placeholder="Seu e-mail"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <input
+                        type="password"
+                        id="login-password"
+                        placeholder="Sua senha"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        id="login-required-btn"
+                    >
+                        Entrar
+                    </button>
+
+                    <div
+                        class="login-msg"
+                        id="login-required-msg"
+                    ></div>
+
+                </form>
+
+                <a
+                    class="login-link"
+                    href="/acesso/cadastro/"
+                >
+                    Não tem uma conta? Cadastre-se
+                </a>
+
+            </div>
+        `;
+
+
+        document
+            .getElementById('login-required-form')
+            .addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                const btn =
+                    document.getElementById(
+                        'login-required-btn'
+                    );
+
+                const msg =
+                    document.getElementById(
+                        'login-required-msg'
+                    );
+
+                btn.disabled = true;
+                btn.textContent = 'Entrando...';
+
+                msg.textContent = '';
+
+                const email =
+                    document
+                        .getElementById('login-email')
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById('login-password')
+                        .value;
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabase.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+
+                if (error) {
+
+                    msg.textContent =
+                        'Erro ao entrar: ' +
+                        error.message;
+
+                    btn.disabled = false;
+                    btn.textContent = 'Entrar';
+
+                    return;
+                }
+
+
+                usuarioLogado = data.user;
+                try { await ensurePrivateApiKey(supabase); }
+                catch (keyError) { console.error('Chave privada:', keyError); }
+                window.location.reload();
+
+            });
+
+    }
+
+
+    async function initCreatePost() {
+
+        try {
+
+            const {
+                data: { session },
+                error: authError
+            } =
+                await supabase.auth.getSession();
+
+
+            if (authError)
+                throw authError;
+
+
+            if (!session || !session.user) {
+
+                mostrarLogin();
+
+                return;
+            }
+
+
+            usuarioLogado =
+                session.user;
+
+
+            const {
+                data: perfil,
+                error: perfilError
+            } =
+                await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', usuarioLogado.id)
+                    .single();
+
+
+            if (perfilError) {
+
+                console.error(
+                    'Erro ao buscar perfil:',
+                    perfilError.message
+                );
+
+            }
+
+
+            const navPerfil =
+                document.getElementById(
+                    'nav-meu-perfil'
+                );
+
+
+            if (navPerfil) {
+
+                if (
+                    perfil &&
+                    perfil.username
+                ) {
+
+                    usuarioLogado.username =
+                        perfil.username;
+
+                    navPerfil.href =
+                        `/u/?q=${encodeURIComponent(
+                            perfil.username
+                        )}`;
+
+                } else {
+
+                    navPerfil.href =
+                        `/u/?q=${usuarioLogado.id}`;
+
+                }
+
+            }
+
+        } catch (err) {
+
+            console.error(
+                'Erro ao verificar autenticação:',
+                err
+            );
+
+            mostrarLogin();
+
+        }
+
+    }
+
+
+    const btnPublicar =
+        document.getElementById(
+            'btn-publicar'
+        );
+
+
+    if (btnPublicar) {
+
+        btnPublicar.addEventListener(
+            'click',
+            async () => {
+
+                const texto =
+                    document
+                        .getElementById('post-text')
+                        .value
+                        .trim();
+
+
+                const ehAnuncio =
+                    document
+                        .getElementById('check-ddl-ad')
+                        .checked;
+
+
+                // NOVO:
+                // true = @anon
+                // false = perfil normal
+                const ehAnon =
+                    document
+                        .getElementById('check-anon')
+                        .checked;
+
+
+                if (!texto) {
+
+                    alert(
+                        'Escreva algo antes de publicar!'
+                    );
+
+                    return;
+                }
+
+
+                const resultadoValidacao =
+                    verificarConteudoProibido(
+                        texto
+                    );
+
+
+                if (resultadoValidacao) {
+
+                    console.warn(
+                        JSON.stringify(
+                            resultadoValidacao,
+                            null,
+                            2
+                        )
+                    );
+
+                    alert(
+                        "⚠️ Conteúdo bloqueado por violação das diretrizes da OPI Team."
+                    );
+
+                    return;
+                }
+
+
+                try {
+
+                    const {
+                        data: { session }
+                    } =
+                        await supabase.auth.getSession();
+
+
+                    if (
+                        !session ||
+                        !session.user
+                    ) {
+
+                        mostrarLogin();
+
+                        return;
+                    }
+
+
+                    btnPublicar.disabled = true;
+
+                    btnPublicar.textContent =
+                        'Publicando...';
+
+
+                    // Insere o post
+                    const {
+                        error: postError
+                    } =
+                        await supabase
+                            .from('posts')
+                            .insert([{
+
+                                title: texto,
+
+                                // ID REAL DO USUÁRIO
+                                creator:
+                                    session.user.id,
+
+                                like: [],
+
+                                comments: [],
+
+                                isddlAd:
+                                    ehAnuncio,
+
+                                // NOVO CAMPO
+                                isAnon:
+                                    ehAnon
+
+                            }]);
+
+
+                    if (postError)
+                        throw postError;
+
+
+                    // Busca saldo atual
+                    const {
+                        data: perfilAtual,
+                        error: fetchError
+                    } =
+                        await supabase
+                            .from('profiles')
+                            .select(
+                                'candys_count'
+                            )
+                            .eq(
+                                'id',
+                                session.user.id
+                            )
+                            .single();
+
+
+                    if (
+                        !fetchError &&
+                        perfilAtual
+                    ) {
+
+                        const saldoAtual =
+                            perfilAtual.candys_count || 0;
+
+
+                        await supabase
+                            .from('profiles')
+                            .update({
+
+                                candys_count:
+                                    saldoAtual + 1
+
+                            })
+                            .eq(
+                                'id',
+                                session.user.id
+                            );
+
+                    }
+
+
+                    // Vai para o feed
+                    window.location.href =
+                        '/fyp/';
+
+
+                } catch (err) {
+
+                    alert(
+                        'Erro ao publicar: ' +
+                        err.message
+                    );
+
+                    btnPublicar.disabled = false;
+
+                    btnPublicar.textContent =
+                        'Publicar no Feed';
+
+                }
+
+            }
+        );
+
+    }
+
+
+    initCreatePost();
+
+</script>
+
+</body>
+</html>

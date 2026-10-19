@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doce de Leite - Assinar Plano Plus</title>
+    <!-- API Oficial do Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fdfbf7 0%, #f4e8d8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #4a3b32;
+            padding: 1rem;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(139, 94, 60, 0.12);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #f0e2d0;
+        }
+
+        .badge {
+            background: #f4e8d8;
+            color: #8c6d53;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #6b4423;
+        }
+
+        .price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #b87333;
+            margin: 1rem 0;
+        }
+
+        .price span {
+            font-size: 0.9rem;
+            color: #8c6d53;
+            font-weight: normal;
+        }
+
+        ul {
+            text-align: left;
+            list-style: none;
+            margin: 1.5rem 0;
+            color: #6b513e;
+            font-size: 0.95rem;
+        }
+
+        ul li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #d99b5b 0%, #b87333 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(184, 115, 51, 0.25);
+        }
+
+        button:hover {
+            opacity: 0.95;
+            transform: scale(1.01);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #feedback {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #8c6d53;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+    <div class="container">
+        <span class="badge">Exclusivo</span>
+        <h1>Doce de Leite Plus</h1>
+        <div class="price">R$ 20,00 <span>/mês</span></div>
+        
+        <ul>
+            <li>✨ Selo verificado de perfil Plus</li>
+            <li>🚀 Prioridade nas postagens e interações</li>
+            <li>🍯 Válido por 30 dias completos</li>
+        </ul>
+
+        <button id="btnAssinar" onclick="pagarComStripe()">Assinar Agora (R$ 20,00)</button>
+        <p id="feedback"></p>
+
+        <a href="index.html" class="back-link">← Voltar para a página inicial</a>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, STRIPE_PUBLIC_KEY, STRIPE_PRICE_ID } from '/config.js';
+
+        
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        const stripe = Stripe(STRIPE_PUBLIC_KEY);
+
+        // Ao carregar a página, verifica se o usuário voltou com sucesso do Stripe
+        window.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('sucesso') === 'true') {
+                const feedback = document.getElementById('feedback');
+                const btn = document.getElementById('btnAssinar');
+                btn.style.display = 'none'; // Esconde o botão após pagar
+
+                feedback.style.color = '#27ae60';
+                feedback.textContent = 'Processando sua assinatura...';
+
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session && session.user) {
+                        // Calcula a data de expiração para daqui a 30 dias
+                        const dataExpiracao = new Date();
+                        dataExpiracao.setDate(dataExpiracao.getDate() + 30);
+
+                        // Atualiza o banco com o status plus e a data limite de 1 mês
+                        const { error } = await supabase
+                            .from('profiles')
+                            .update({ 
+                                is_plus: true,
+                                plus_expires_at: dataExpiracao.toISOString() 
+                            })
+                            .eq('id', session.user.id);
+
+                        if (error) throw error;
+
+                        // Mensagem exata solicitada na tela
+                        feedback.innerHTML = '<strong>Sucesso!💥🍮</strong><br>Você pagou o Plus, aproveite o plus por esse mês todo!';
+                        
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 4000);
+                    }
+                } catch (err) {
+                    feedback.style.color = '#b85133';
+                    feedback.textContent = 'Erro ao ativar o seu Plus no banco de dados. Contate o suporte.';
+                }
+            }
+        });
+
+        window.pagarComStripe = async function() {
+            const feedback = document.getElementById('feedback');
+            const btn = document.getElementById('btnAssinar');
+            
+            feedback.style.color = '#8c6d53';
+            feedback.textContent = 'Verificando sua sessão...';
+            btn.disabled = true;
+
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session || !session.user) {
+                    feedback.style.color = '#b85133';
+                    feedback.textContent = 'Você precisa estar logado para assinar!';
+                    setTimeout(() => window.location.href = '/acesso/login/', 2000);
+                    return;
+                }
+
+                feedback.textContent = 'Redirecionando para o Stripe...';
+
+                const { error } = await stripe.redirectToCheckout({
+                    lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+                    mode: 'payment',
+                    successUrl: `${window.location.href.split('?')[0]}?sucesso=true`,
+                    cancelUrl: window.location.href,
+                    clientReferenceId: session.user.id
+                });
+
+                if (error) throw error;
+
+            } catch (err) {
+                feedback.style.color = '#b85133';
+                feedback.textContent = err.message || 'Erro ao conectar com o Stripe.';
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no">
+    <title>Criar Conta - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border: 2px solid #d7ccc8;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(111, 78, 55, 0.05);
+        }
+        h1 { font-size: 1.6rem; color: #6d4c41; margin-bottom: 20px; text-align: center; }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #6d4c41;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #faf8f5;
+            color: #3e2723;
+        }
+        input:focus { border-color: #8d6e63; }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #8d6e63;
+            color: white;
+            transition: background 0.2s;
+        }
+        .btn:hover { background-color: #6d4c41; }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: #8d6e63;
+            font-size: 0.85rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #d7ccc8;
+        }
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #faf8f5;
+            color: #3e2723;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .social-btn:hover { background-color: #f0eae1; }
+        .social-btn svg { width: 20px; height: 20px; margin-right: 10px; }
+
+        .links {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+        .links a {
+            color: #8d6e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .links a:hover { text-decoration: underline; }
+        .error-msg {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🍮 Criar Conta</h1>
+        <div id="error-container" class="error-msg"></div>
+
+        <div class="input-group">
+            <label>Nome de Exibição (Ex: João Doce)</label>
+            <input type="text" id="display-name" placeholder="Como as pessoas vão te ver">
+        </div>
+
+        <div class="input-group">
+            <label>Username (Ex: joaodoce)</label>
+            <input type="text" id="username" placeholder="Seu identificador único">
+        </div>
+
+        <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="email" placeholder="seu@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="password" placeholder="Sua senha secreta">
+        </div>
+
+        <button id="btn-cadastrar" class="btn">Cadastrar</button>
+
+        <div class="divider">ou continuar com</div>
+
+        <!-- Botões Sociais -->
+        <button type="button" id="btn-google" class="social-btn">
+            <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.4l3.7 2.9C6.5 7.1 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.7c-.2-.7-.4-1.5-.4-2.7s.2-2 .4-2.7L1.9 6.4C.7 8.8 0 11.3 0 14s.7 5.2 1.9 7.6l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.1-6.4-5.3L1.9 15.7C3.7 19.5 7.5 23 12 23z"/></svg>
+            Google
+        </button>
+
+        <button type="button" id="btn-github" class="social-btn">
+            <svg viewBox="0 0 24 24"><path fill="#3e2723" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+        </button>
+
+        <div class="links">
+            Já tem uma conta? <a href="/acesso/login/">Entrar</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+        import { ensurePrivateApiKey } from '/api-keys.js';
+
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth: {
+                storage: window.localStorage,
+                persistSession: true,
+                autoRefreshToken: true,
+            }
+        });
+
+        const btnCadastrar = document.getElementById('btn-cadastrar');
+        const errorContainer = document.getElementById('error-container');
+
+        btnCadastrar.addEventListener('click', async () => {
+            errorContainer.textContent = '';
+            
+            const displayName = document.getElementById('display-name').value.trim();
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!displayName || !username || !email || !password) {
+                errorContainer.textContent = 'Preencha todos os campos!';
+                return;
+            }
+
+            if (username.includes(' ') || username.includes('@')) {
+                errorContainer.textContent = 'O username não pode ter espaços ou @.';
+                return;
+            }
+
+            btnCadastrar.disabled = true;
+            btnCadastrar.textContent = 'Criando conta...';
+
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email,
+                password
+            });
+
+            if (authError) {
+                errorContainer.textContent = authError.message;
+                btnCadastrar.disabled = false;
+                btnCadastrar.textContent = 'Cadastrar';
+                return;
+            }
+
+            const userId = authData.user?.id;
+
+            if (userId) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert({
+                        id: userId,
+                        email: email,
+                        username: username,
+                        display_name: displayName,
+                        avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + username
+                    });
+
+                if (profileError) {
+                    errorContainer.textContent = 'Erro ao salvar perfil: ' + profileError.message;
+                    btnCadastrar.disabled = false;
+                    btnCadastrar.textContent = 'Cadastrar';
+                    return;
+                }
+            }
+
+            if (authData.session?.access_token) {
+                try { await ensurePrivateApiKey(supabase); }
+                catch (keyError) { console.error('Chave privada:', keyError); }
+            }
+            window.location.href = '/fyp/';
+        });
+
+        // Lógica de Login Social (Google e GitHub)
+        async function signInWithProvider(provider) {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: {
+                    redirectTo: window.location.origin + '/fyp/'
+                }
+            });
+            if (error) {
+                errorContainer.textContent = `Erro ao entrar com ${provider}: ` + error.message;
+            }
+        }
+
+        document.getElementById('btn-google').addEventListener('click', () => signInWithProvider('google'));
+        document.getElementById('btn-github').addEventListener('click', () => signInWithProvider('github'));
+    </script>
+</body>
+</html>

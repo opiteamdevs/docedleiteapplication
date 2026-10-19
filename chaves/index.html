@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#8d6e63">
+  <title>Minhas chaves — Doce de Leite</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#fffaf0;color:#3e2723;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;place-items:center;padding:20px}.card{width:min(100%,520px);background:#fff;border:1px solid #d7ccc8;border-radius:20px;padding:26px;box-shadow:0 12px 32px #3e272312}h1{margin:0 0 8px;color:#6d4c41;font-size:1.6rem}p{line-height:1.5;color:#6d4c41}.status{margin:18px 0;padding:16px;background:#fffaf0;border:1px solid #d7ccc8;border-radius:12px}.stats{display:flex;justify-content:space-between;gap:12px;margin:10px 0;font-weight:650}.bar{height:10px;background:#eaddd7;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;width:0;background:#8d6e63;transition:width .2s}button,a{font:inherit}button{width:100%;border:0;border-radius:10px;background:#8d6e63;color:white;padding:13px;font-weight:700;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.msg{min-height:24px;margin-top:12px;font-size:.95rem}a{color:#6d4c41}small{color:#795548}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>🔐 Minhas chaves privadas</h1>
+    <p>A chave é criada no servidor e nunca é mostrada nesta página. Ela é guardada cifrada no banco de dados.</p>
+    <section class="status" aria-live="polite">
+      <div class="stats"><span>Status</span><span id="key-state">Verificando…</span></div>
+      <div class="stats"><span>Usos contabilizados</span><span id="key-used">—</span></div>
+      <div class="bar"><span id="key-bar"></span></div>
+      <div class="stats"><span>Limite</span><span>100.000 usos</span></div>
+    </section>
+    <button id="refresh" type="button">Atualizar / ativar chave</button>
+    <div class="msg" id="msg" role="status"></div>
+    <p><small>Por segurança, esta tela não revela a chave original nem permite recuperar o segredo cifrado.</small></p>
+    <a href="/fyp/">← Voltar ao Doce de Leite</a>
+  </main>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+    import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+    import { ensurePrivateApiKey, getPrivateApiKeyStatus } from '/api-keys.js';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const button = document.getElementById('refresh');
+    const msg = document.getElementById('msg');
+    async function refreshStatus(activate = false) {
+      button.disabled = true; msg.textContent = 'Consultando o servidor…';
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session) {
+          document.getElementById('key-state').textContent = 'Entre na sua conta';
+          document.getElementById('key-used').textContent = '—';
+          document.getElementById('key-bar').style.width = '0%';
+          msg.textContent = 'Você precisa entrar para consultar sua chave.';
+          return;
+        }
+        if (activate) await ensurePrivateApiKey(supabase);
+        const status = await getPrivateApiKeyStatus(supabase);
+        document.getElementById('key-state').textContent = status.active ? 'Ativa' : 'Não ativada';
+        document.getElementById('key-used').textContent = Number(status.used || 0).toLocaleString('pt-BR');
+        document.getElementById('key-bar').style.width = `${Math.min(100, Number(status.used || 0) / 1000)}%`;
+        msg.textContent = status.active ? 'Status atualizado. A chave continua privada.' : 'Não há uma chave ativa para esta conta.';
+      } catch (error) {
+        console.error(error); msg.textContent = 'Não foi possível consultar a chave. Confira se o Worker e o SQL foram configurados.';
+        document.getElementById('key-state').textContent = 'Indisponível';
+      } finally { button.disabled = false; }
+    }
+    button.addEventListener('click', () => refreshStatus(true));
+    refreshStatus(false);
+  </script>
+</body>
+</html>

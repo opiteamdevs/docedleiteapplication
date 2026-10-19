@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "br.com.docedleite",
+    "sha256_cert_fingerprints": [
+      "EC:1F:DD:9B:EE:68:96:E1:07:75:5C:0F:B0:AB:8A:4C:16:59:72:36:36:06:F5:0A:C6:FE:2E:1C:F5:79:B7:82"
+    ]
+  }
+}]

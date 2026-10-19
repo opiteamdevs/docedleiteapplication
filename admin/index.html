@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: #ffffff;
+            min-height: 100vh;
+            border: none;
+            padding: 24px;
+            padding-bottom: 90px;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 16px 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            margin-left: -24px;
+            margin-right: -24px;
+            margin-top: -24px;
+        }
+        header h1 { font-size: 1.1rem; color: #8d6e63; font-weight: bold; }
+        header a { color: #8d6e63; text-decoration: none; font-size: 0.9rem; font-weight: bold; }
+        header a:hover { text-decoration: underline; }
+
+        .auth-box, .admin-panel {
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+            width: 100%;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #8d6e63;
+            color: white;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #6d4c41; }
+        button.danger { background-color: #d32f2f; }
+        button.danger:hover { background-color: #b71c1c; }
+        button.success { background-color: #2e7d32; }
+        button.success:hover { background-color: #1b5e20; }
+        button.info { background-color: #0288d1; }
+        button.info:hover { background-color: #01579b; }
+
+        .admin-panel { display: none; text-align: left; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #d7ccc8;
+            color: #3e2723;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #8d6e63;
+            color: white;
+        }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        .card-admin {
+            background: #faf8f5;
+            border: 1px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        .card-info { word-break: break-word; flex: 1; }
+        .card-info p { font-size: 0.9rem; margin-bottom: 4px; color: #3e2723; }
+        
+        .user-action-box {
+            background: #faf8f5;
+            border: 1px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .user-action-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .action-buttons-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .msg { text-align: center; color: #8d6e63; font-size: 1rem; margin-top: 20px; }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="/fyp/">← Voltar ao Feed</a>
+            <h1>🛡️ Painel Admin</h1>
+            <span></span>
+        </header>
+
+        <!-- TELA DE IDENTIFICAÇÃO DO ADMIN -->
+        <div id="auth-screen" class="auth-box">
+            <h2 style="color: #6d4c41; margin-bottom: 16px;">Área Restrita</h2>
+            <p style="color: #8d6e63; font-size: 0.9rem; margin-bottom: 16px;">Digite o seu e-mail ou UUID para entrar no painel:</p>
+            <input type="text" id="admin-identifier-input" placeholder="Seu ID ou e-mail...">
+            <button id="btn-login-admin" style="width: 100%; padding: 12px;">Verificar Acesso</button>
+        </div>
+
+        <!-- PAINEL DE CONTROLE -->
+        <div id="admin-screen" class="admin-panel">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="trocarTab('posts')">Moderar Posts</button>
+                <button class="tab-btn" onclick="trocarTab('usuarios')">Gerenciar Usuários</button>
+            </div>
+
+            <!-- SEÇÃO DE POSTS -->
+            <div id="section-posts" class="section-content active">
+                <h3 style="color: #6d4c41; margin-bottom: 14px;">Publicações da Comunidade</h3>
+                <div id="admin-posts-list">
+                    <div class="msg">Carregando posts...</div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO DE USUÁRIOS -->
+            <div id="section-usuarios" class="section-content">
+                <h3 style="color: #6d4c41; margin-bottom: 14px;">Gerenciar por @usuario</h3>
+                
+                <div class="user-action-box">
+                    <p style="color: #6d4c41; font-size: 0.85rem; margin-bottom: 8px; font-weight: bold;">Digite o @ do usuário alvo:</p>
+                    <input type="text" id="target-username-input" placeholder="ex: usuario123 (sem o @)">
+                    <div class="action-buttons-grid">
+                        <button class="info" onclick="executarAcaoUsuario('admin')">Alternar Admin</button>
+                        <button class="info" onclick="executarAcaoUsuario('verify')">Alternar Selo</button>
+                        <button class="danger" onclick="executarAcaoUsuario('ban')">Alternar Banimento</button>
+                    </div>
+                </div>
+
+                <h4 style="color: #6d4c41; margin-bottom: 10px; font-size: 0.95rem;">Lista Geral de Usuários</h4>
+                <div id="admin-users-list">
+                    <div class="msg">Carregando usuários...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        const btnLogin = document.getElementById('btn-login-admin');
+        const authScreen = document.getElementById('auth-screen');
+        const adminScreen = document.getElementById('admin-screen');
+        const identifierInput = document.getElementById('admin-identifier-input');
+
+        if (sessionStorage.getItem('admin_autenticado') === 'true') {
+            authScreen.style.display = 'none';
+            adminScreen.style.display = 'block';
+            carregarDadosAdmin();
+        }
+
+        btnLogin.addEventListener('click', async () => {
+            const valor = identifierInput.value.trim();
+            if (!valor) {
+                alert('⚠️ Digite um identificador válido!');
+                return;
+            }
+
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .or(`id.eq.${valor},username.eq.${valor}`)
+                .maybeSingle();
+
+            if (error || !profile) {
+                alert('❌ Usuário não encontrado!');
+                return;
+            }
+
+            if (profile.isAdmin === true) {
+                sessionStorage.setItem('admin_autenticado', 'true');
+                authScreen.style.display = 'none';
+                adminScreen.style.display = 'block';
+                carregarDadosAdmin();
+            } else {
+                alert('❌ Este usuário não possui privilégios de administrador (isAdmin).');
+            }
+        });
+
+        window.trocarTab = function(aba) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+
+            if (aba === 'posts') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('section-posts').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('section-usuarios').classList.add('active');
+            }
+        }
+
+        async function carregarDadosAdmin() {
+            carregarPostsAdmin();
+            carregarUsuariosAdmin();
+        }
+
+        async function carregarPostsAdmin() {
+            const listContainer = document.getElementById('admin-posts-list');
+            const { data: posts, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
+
+            if (error) { listContainer.innerHTML = `<div class="msg">Erro: ${error.message}</div>`; return; }
+            if (!posts || posts.length === 0) { listContainer.innerHTML = `<div class="msg">Nenhum post encontrado.</div>`; return; }
+
+            listContainer.innerHTML = '';
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card-admin';
+                card.innerHTML = `
+                    <div class="card-info">
+                        <p><strong>ID:</strong> ${post.id}</p>
+                        <p><strong>Conteúdo:</strong> ${escapeHtml(post.title)}</p>
+                    </div>
+                    <button class="danger" onclick="deletarPostAdmin(${post.id})">Deletar</button>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        async function carregarUsuariosAdmin() {
+            const listContainer = document.getElementById('admin-users-list');
+            const { data: users, error } = await supabase.from('profiles').select('*');
+
+            if (error) { listContainer.innerHTML = `<div class="msg">Erro: ${error.message}</div>`; return; }
+            if (!users || users.length === 0) { listContainer.innerHTML = `<div class="msg">Nenhum usuário encontrado.</div>`; return; }
+
+            listContainer.innerHTML = '';
+            users.forEach(user => {
+                const banido = user.isBanned === true;
+                const verificado = user.is_verified === true;
+                const admin = user.isAdmin === true;
+                
+                const card = document.createElement('div');
+                card.className = 'card-admin';
+                card.innerHTML = `
+                    <div class="card-info">
+                        <p><strong>Nome:</strong> ${escapeHtml(user.display_name || 'Sem nome')} ${verificado ? '✓' : ''}</p>
+                        <p><strong>@${escapeHtml(user.username || 'sem_usuario')}</strong></p>
+                        <p><strong>Status:</strong> ${banido ? '<span style="color:red; font-weight:bold;">Banido</span>' : '<span style="color:green;">Ativo</span>'} | <strong>Admin:</strong> ${admin ? '<span style="color:purple; font-weight:bold;">Sim</span>' : 'Não'}</p>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        window.deletarPostAdmin = async function(postId) {
+            if (!confirm(`Apagar o post #${postId}?`)) return;
+            const { error } = await supabase.from('posts').delete().eq('id', postId);
+            if (!error) carregarPostsAdmin();
+            else alert('Erro ao deletar: ' + error.message);
+        };
+
+        window.executarAcaoUsuario = async function(tipoAcao) {
+            let usernameInput = document.getElementById('target-username-input').value.trim();
+            if (!usernameInput) {
+                alert('⚠️ Digite o @ do usuário primeiro!');
+                return;
+            }
+
+            // Remove o @ caso o usuário tenha colocado por reflexo
+            usernameInput = usernameInput.replace('@', '');
+
+            const { data: user, error: buscaErro } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('username', usernameInput)
+                .maybeSingle();
+
+            if (buscaErro || !user) {
+                alert('❌ Usuário não encontrado com esse username!');
+                return;
+            }
+
+            let campoAtualizar = '';
+            let novoValor = false;
+            let mensagemConf = '';
+
+            if (tipoAcao === 'admin') {
+                campoAtualizar = 'isAdmin';
+                novoValor = !user.isAdmin;
+                mensagemConf = `Deseja realmente ${novoValor ? 'dar' : 'remover'} admin de @${usernameInput}?`;
+            } else if (tipoAcao === 'verify') {
+                campoAtualizar = 'is_verified';
+                novoValor = !user.is_verified;
+                mensagemConf = `Deseja realmente ${novoValor ? 'verificar' : 'remover selo de'} @${usernameInput}?`;
+            } else if (tipoAcao === 'ban') {
+                campoAtualizar = 'isBanned';
+                novoValor = !user.isBanned;
+                mensagemConf = `Deseja realmente ${novoValor ? 'banir' : 'desbanir'} @${usernameInput}?`;
+            }
+
+            if (!confirm(mensagemConf)) return;
+
+            const { error: updateErro } = await supabase
+                .from('profiles')
+                .update({ [campoAtualizar]: novoValor })
+                .eq('id', user.id);
+
+            if (!updateErro) {
+                alert('✅ Ação realizada com sucesso!');
+                document.getElementById('target-username-input').value = '';
+                carregarUsuariosAdmin();
+            } else {
+                alert('❌ Erro ao atualizar: ' + updateErro.message);
+            }
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>

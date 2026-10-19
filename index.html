@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Cor do tema atualizada conforme solicitado -->
+    <meta name="theme-color" content="#8d6e63">
+    
+    <!-- Link para o arquivo manifest.json do PWA -->
+
+    
+    <title>Rede Doce de Leite - O Caos Total</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #8d6e63;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #5d4037;
+        }
+        .btn-entrar {
+            display: inline-block;
+            background-color: #8d6e63;
+            color: white;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(141, 110, 99, 0.3);
+        }
+        .btn-entrar:hover {
+            background-color: #6d4c41;
+            transform: translateY(-2px);
+        }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+    <h1>🍮 Doce de Leite</h1>
+
+    <script type="module">
+        // Registro do Service Worker inserido na inicialização existente
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso!'))
+                    .catch(err => console.error('Erro ao registrar Service Worker:', err));
+            });
+        }
+
+        // Redirecionamento automático existente
+        setTimeout(() => {
+            window.location.href = '/fyp/';
+        }, 2000);
+    </script>
+</body>
+</html>

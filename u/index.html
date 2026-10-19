@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Perfil - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    <style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent;}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fffaf0;
+    color: #3e2723;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    width: 100%;
+    max-width: 100%;
+    background: #ffffff;
+    min-height: 100vh;
+    border: none;
+    padding: 24px;
+    padding-bottom: 90px;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    padding: 16px 20px;
+    border-bottom: 2px solid #d7ccc8;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    margin-left: -24px;
+    margin-right: -24px;
+    margin-top: -24px;
+}
+header h1 { 
+    font-size: 1.1rem; 
+    color: #8d6e63; 
+    font-weight: bold;
+}
+header a {
+    color: #8d6e63;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+header a:hover { text-decoration: underline; }
+.profile-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.team-badge {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 12px auto; /* Centraliza perfeitamente no topo */
+    background-color: #f5f0eb;
+    color: #6d4c41;
+    border: 1px solid #d7ccc8;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #d7ccc8;
+    margin: 0 auto 12px auto;
+    background-color: #faf8f5;
+}
+.profile-name { font-size: 1.5rem; font-weight: bold; color: #6d4c41; margin-bottom: 2px; }
+.profile-username { font-size: 0.95rem; color: #8d6e63; margin-bottom: 10px; }
+.profile-bio { font-size: 0.95rem; color: #5d4037; margin-bottom: 16px; padding: 0 20px; word-break: break-word; }
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    color: #5d4037;
+}
+button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #8d6e63;
+    color: white;
+    transition: background 0.2s;
+}
+button:hover { background-color: #6d4c41; }
+button:disabled { opacity: 0.7; cursor: not-allowed; }
+button.secondary {
+    background-color: #d7ccc8;
+    color: #3e2723;
+    margin-left: 8px;
+}
+button.secondary:hover { background-color: #bcaaa4; }
+
+.edit-box {
+    background: #faf8f5;
+    border: 1px solid #d7ccc8;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: left;
+    display: none;
+}
+.edit-box label { font-size: 0.85rem; font-weight: bold; color: #6d4c41; display: block; margin-bottom: 4px; }
+.edit-box input, .edit-box textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #d7ccc8;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    font-family: inherit;
+}
+.edit-box textarea { resize: vertical; height: 70px; }
+
+.post-card {
+    background: #ffffff;
+    border: 1px solid #d7ccc8;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 5px rgba(111, 78, 55, 0.05);
+    text-align: left;
+}
+.post-content {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #3e2723;
+    margin-bottom: 12px;
+    word-break: break-word;
+}
+.post-actions {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #8d6e63;
+    border-top: 1px solid #f5f0eb;
+    padding-top: 10px;
+}
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #8d6e63;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+}
+.action-btn:hover { color: #6d4c41; }
+.action-btn.liked { color: #d32f2f; }
+
+.msg { text-align: center; margin-top: 40px; color: #8d6e63; font-size: 1rem; }
+nav {
+    display: flex;
+    border-top: 2px solid #d7ccc8;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    z-index: 1000;
+}
+nav a {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #8d6e63;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+nav a:hover, nav a.active {
+    background-color: #f5f0eb;
+    color: #3e2723;
+}
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 60px;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 4px solid #f5f0eb;
+    border-top: 4px solid #8d6e63;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🍮 Doce de Leite</h1>
+        </header>
+
+        <div id="profile-container">
+            <div class="loading-container">
+    <div class="spinner"></div>
+</div>
+        </div>
+<nav> <a href="/fyp/">Início</a> <a href="/createpost/">Criar Post</a> <a href="#" id="nav-meu-perfil" class="active">Meu Perfil</a> 
+   </nav> 
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth: {
+                storage: window.localStorage,
+                persistSession: true,
+                autoRefreshToken: true,
+            }
+        });
+
+        const listaNegraPalavras = [
+            "spam", "scam", "phishing", "hack", "hacker", "cracker", "bot", 
+            "gratis", "free", "ganhedinheiro", "rendaextra", "trabalheemcasa", 
+            "aposta", "bet", "cassino", "slot", "tigrinho", "fortune", 
+            "dinheirofacil", "trader", "sinal", "telegram.me", "t.me", 
+            "porn", "sex", "xxx", "nude", "nudes", "18+", "conteudoadulto", 
+            "idiota", "imbecil", "estupido", "burro", "otario", "patife", 
+            "canalha", "lixo", "desgraçado", "maldito", "filhodaputa", 
+            "puta", "caralho", "merda", "bosta", "porra", "arrombado", 
+            "corno", "vagabundo", "golpe", "piramide"
+        ];
+
+        function verificarConteudoProibido(texto) {
+            const textoFormatado = texto.toLowerCase();
+            for (let palavra of listaNegraPalavras) {
+                const regex = new RegExp(`\\b${palavra}\\b`, 'i');
+                if (regex.test(textoFormatado) || textoFormatado.includes(palavra)) {
+                    return {
+                        detected: "blocknow()",
+                        Violation: "violation of guidelines"
+                    };
+                }
+            }
+            return null;
+        }
+
+        async function carregarPerfilPublico() {
+            const container = document.getElementById('profile-container');
+            const navMeuPerfil = document.getElementById('nav-meu-perfil');
+
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session && session.user) {
+                const { data: meuPerfilData } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', session.user.id)
+                    .single();
+                if (meuPerfilData) {
+                    if (navMeuPerfil) navMeuPerfil.href = `/u/?q=${encodeURIComponent(meuPerfilData.username)}`;
+                }
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = (urlParams.get('q') || '').trim().toLowerCase();
+
+            if (!username) {
+                container.innerHTML = `<div class="msg">Usuário não especificado na query (?q=...).</div>`;
+                return;
+            }
+
+            const { data: perfil, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('username', username)
+                .single();
+
+            if (error || !perfil) {
+                container.innerHTML = `<div class="msg">Ops! Usuário @${escapeHtml(username)} não encontrado no caldeirão.</div>`;
+                return;
+            }
+
+            const { data: postsBanco } = await supabase
+                .from('posts')
+                .select('id, isddlAd')
+                .eq('creator', perfil.id);
+
+            const postsApenasUsuario = postsBanco ? postsBanco.filter(p => !p.isddlAd) : [];
+            const quantidadePosts = postsApenasUsuario.length;
+
+            const meuId = session?.user?.id;
+            const ehDono = meuId === perfil.id;
+            
+            const seguidores = perfil.followers || [];
+            const totalSeguidores = seguidores.length;
+            const euSigoEste = meuId && !ehDono ? seguidores.includes(meuId) : false;
+            const bioTexto = perfil.bio ? escapeHtml(perfil.bio) : 'Sem bio no momento.';
+            
+            const seloVerificado = perfil.is_verified
+                ? ' <img src="/verify.png" alt="Verificado" title="Verificado" style="width: 20px; height: 20px; vertical-align: middle; display: inline-block;">'
+                : '';
+
+            // Verificação do isTeam para mostrar o selo da equipe em cima do perfil
+            const badgeTeam = perfil.isTeam 
+                ? `<div class="team-badge">🛡️ O usuário faz parte da equipe do DL</div>` 
+                : '';
+
+                        container.innerHTML = `
+                <div class="profile-header">
+                    ${badgeTeam}
+                    <img src="${perfil.avatar_url || 'https://via.placeholder.com/90'}" class="avatar" alt="Avatar">
+                    <div class="profile-name">${escapeHtml(perfil.display_name)}${seloVerificado}</div>
+                    <div class="profile-username">@${escapeHtml(perfil.username)}</div>
+                    <div class="profile-bio">${bioTexto}</div>
+                    <div class="stats">
+                        <span><strong>${totalSeguidores}</strong> seguidores</span>
+                        <span><strong>${quantidadePosts}</strong> posts</span>
+                    </div>
+
+                    ${ehDono ? `
+  <button id="btn-toggle-edit" class="secondary">✏️ Editar Perfil</button><br><br>
+  <a href="/yourcandys" style="text-decoration: none;">
+    <button class="secondary">🍬 Ver Meus Doces</button>
+  </a>
+` : ''}
+
+                    ${!ehDono && meuId ? `<button id="btn-seguir">${euSigoEste ? 'Seguindo' : 'Seguir'}</button>` : ''}
+                </div>
+
+
+                ${ehDono ? `
+                    <div class="edit-box" id="edit-box">
+                        <label>Nome de Exibição:</label>
+                        <input type="text" id="input-name" value="${escapeHtml(perfil.display_name || '')}">
+                        
+                        <label>Nome de Usuário (@):</label>
+                        <input type="text" id="input-username" value="${escapeHtml(perfil.username || '')}">
+
+                        <label>Bio:</label>
+                        <textarea id="input-bio" placeholder="Fale um pouco sobre você...">${escapeHtml(perfil.bio || '')}</textarea>
+
+                        <label>Link da Foto de Perfil (URL):</label>
+                        <input type="url" id="input-avatar" placeholder="https://exemplo.com/foto.jpg" value="${escapeHtml(perfil.avatar_url || '')}">
+                        
+                        <button id="btn-salvar">Salvar Alterações</button>
+                    </div>
+                ` : ''}
+
+                <hr style="border: 0; border-top: 1px solid #d7ccc8; margin: 20px 0 20px 0;">
+                <h3 style="color: #6d4c41; margin-bottom: 16px; font-size: 1.1rem;">Publicações</h3>
+                <div id="user-posts-list">
+                    <div style="text-align: center; color: #8d6e63; font-size: 0.9rem;">Carregando publicações...</div>
+                </div>
+            `;
+            await carregarPostsDoPerfil(perfil);
+
+            if (ehDono) {
+                document.getElementById('btn-toggle-edit').addEventListener('click', () => {
+                    const editBox = document.getElementById('edit-box');
+                    editBox.style.display = editBox.style.display === 'block' ? 'none' : 'block';
+                });
+
+                document.getElementById('btn-salvar').addEventListener('click', async () => {
+                    const novoNome = document.getElementById('input-name').value.trim();
+                    let novoUsername = document.getElementById('input-username').value.trim().toLowerCase();
+                    novoUsername = novoUsername.startsWith('@') ? novoUsername.substring(1) : novoUsername;
+                    const novaBio = document.getElementById('input-bio').value.trim();
+                    const novaFoto = document.getElementById('input-avatar').value.trim();
+                    
+                    if (!novoNome) { alert('O nome de exibição não pode ficar vazio.'); return; }
+                    if (!novoUsername) { alert('O nome de usuário (@) não pode ficar vazio.'); return; }
+
+                    const btnSalvar = document.getElementById('btn-salvar');
+                    btnSalvar.disabled = true;
+                    btnSalvar.textContent = 'Salvando...';
+
+                    const payload = { 
+                        display_name: novoNome,
+                        username: novoUsername,
+                        bio: novaBio 
+                    };
+                    if (novaFoto) payload.avatar_url = novaFoto;
+
+                    const { error: updateError } = await supabase.from('profiles').update(payload).eq('id', meuId);
+                    if (!updateError) {
+                        window.location.href = `/u/?q=${encodeURIComponent(novoUsername)}`;
+                    } else {
+                        alert('Erro ao atualizar perfil: ' + updateError.message);
+                        btnSalvar.disabled = false;
+                        btnSalvar.textContent = 'Salvar Alterações';
+                    }
+                });
+            }
+
+            const btnSeguir = document.getElementById('btn-seguir');
+            if (btnSeguir) {
+                btnSeguir.addEventListener('click', async () => {
+                    let listaAtualizada = [...seguidores];
+                    if (euSigoEste) {
+                        listaAtualizada = listaAtualizada.filter(id => id !== meuId);
+                    } else {
+                        listaAtualizada.push(meuId);
+                    }
+                    btnSeguir.disabled = true;
+                    const { error: updateError } = await supabase.from('profiles').update({ followers: listaAtualizada }).eq('id', perfil.id);
+                    if (!updateError) window.location.reload();
+                    else { alert('Erro ao atualizar seguidor: ' + updateError.message); btnSeguir.disabled = false; }
+                });
+            }
+        }
+
+        async function carregarPostsDoPerfil(perfil) {
+            const postsListContainer = document.getElementById('user-posts-list');
+            const { data: { session } } = await supabase.auth.getSession();
+            const meuId = session?.user?.id;
+
+            const { data: posts, error } = await supabase
+                .from('posts')
+                .select('*')
+                .eq('creator', perfil.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                postsListContainer.innerHTML = `<div style="text-align: center; color: #8d6e63; font-size: 0.9rem;">Erro ao carregar posts: ${error.message}</div>`;
+                return;
+            }
+
+            const postsNormais = posts ? posts.filter(p => !p.isddlAd) : [];
+
+            if (postsNormais.length === 0) {
+                postsListContainer.innerHTML = `<div style="text-align: center; color: #8d6e63; font-size: 0.9rem;">Este usuário ainda não fez nenhuma publicação.</div>`;
+                return;
+            }
+
+            postsListContainer.innerHTML = '';
+            postsNormais.forEach(post => {
+                const likesArray = post.like || [];
+                const totalLikes = likesArray.length;
+                const euCurti = meuId ? likesArray.includes(meuId) : false;
+                const comentariosArray = post.comments || [];
+
+                const card = document.createElement('div');
+                card.className = 'post-card';
+                card.innerHTML = `
+                    <div class="post-content">${escapeHtml(post.title)}</div>
+                    <div class="post-actions">
+                        <button class="action-btn ${euCurti ? 'liked' : ''}" onclick="curtirPostPerfil(${post.id})">
+                            ❤️ <span>${totalLikes}</span>
+                        </button>
+                        <button class="action-btn" onclick="toggleComentarios(${post.id})">
+                            💬 <span>${comentariosArray.length}</span>
+                        </button>
+                    </div>
+
+                    <div id="comments-section-${post.id}" style="display: none; margin-top: 12px; border-top: 1px dashed #d7ccc8; padding-top: 10px;">
+                        <div id="comments-list-${post.id}" style="max-height: 150px; overflow-y: auto; margin-bottom: 8px; font-size: 0.9rem;">
+                            <div style="color: #8d6e63; font-size: 0.85rem;">Carregando...</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="comment-input-${post.id}" placeholder="Escreva um comentário..." style="flex: 1; padding: 6px 10px; border: 1px solid #d7ccc8; border-radius: 6px; font-size: 0.85rem; outline: none;">
+                            <button onclick="enviarComentarioPerfil(${post.id})" style="padding: 6px 12px; background: #8d6e63; color: white; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer;">Enviar</button>
+                        </div>
+                    </div>
+                `;
+                postsListContainer.appendChild(card);
+            });
+        }
+
+        window.curtirPostPerfil = async function(postId) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session || !session.user) {
+                alert("User is not logged in");
+                window.location.href = '/acesso/login/';
+                return;
+            }
+
+            const { data: post } = await supabase.from('posts').select('like').eq('id', postId).single();
+            if (!post) return;
+
+            let likes = post.like || [];
+            if (likes.includes(session.user.id)) {
+                likes = likes.filter(id => id !== session.user.id);
+            } else {
+                likes.push(session.user.id);
+            }
+
+            const { error } = await supabase.from('posts').update({ like: likes }).eq('id', postId);
+            if (!error) {
+                carregarPerfilPublico();
+            }
+        };
+
+        window.toggleComentarios = async function(postId) {
+            const section = document.getElementById(`comments-section-${postId}`);
+            if (!section) return;
+
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                await carregarComentariosNoCard(postId);
+            } else {
+                section.style.display = 'none';
+            }
+        };
+
+        async function carregarComentariosNoCard(postId) {
+     const listContainer = document.getElementById(`comments-list-${postId}`);
+            if (!listContainer) return;
+            listContainer.innerHTML = '<div style="color: #8d6e63; font-size: 0.85rem;">Carregando comentários...</div>';
+
+            const { data: post, error } = await supabase
+                .from('posts')
+                .select('comments')
+                .eq('id', postId)
+                .single();
+
+            if (error || !post) {
+                listContainer.innerHTML = '<div style="color: #d32f2f; font-size: 0.85rem;">Erro ao carregar.</div>';
+                return;
+            }
+
+            const comentarios = post.comments || [];
+            if (comentarios.length === 0) {
+                listContainer.innerHTML = '<div style="color: #8d6e63; font-size: 0.85rem; font-style: italic;">Nenhum comentário ainda.</div>';
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            comentarios.forEach(c => {
+                const item = document.createElement('div');
+                item.style.marginBottom = '6px';
+                item.innerHTML = `<strong>@${escapeHtml(c.username)}:</strong> ${escapeHtml(c.text)}`;
+                listContainer.appendChild(item);
+            });
+        }
+
+        window.enviarComentarioPerfil = async function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const textoComentario = input.value.trim();
+            if (!textoComentario) return;
+
+            const resultadoValidacao = verificarConteudoProibido(textoComentario);
+            if (resultadoValidacao) {
+                alert("⚠️ Seu comentário violou as diretrizes da comunidade Doce de Leite e foi barrado.");
+                return;
+            }
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session || !session.user) {
+                alert("User is not logged in");
+                window.location.href = '/acesso/login/';
+                return;
+            }
+
+            const { data: perfilAtivoData } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', session.user.id)
+                .single();
+
+            const usernameAtual = perfilAtivoData ? perfilAtivoData.username : 'anonimo';
+
+            const { data: postAtual, error: fetchError } = await supabase
+                .from('posts')
+                .select('comments')
+                .eq('id', postId)
+                .single();
+
+            if (fetchError || !postAtual) {
+                alert("Erro ao enviar comentário.");
+                return;
+            }
+
+            let comentariosAtuais = postAtual.comments || [];
+            comentariosAtuais.push({
+                user_id: session.user.id,
+                username: usernameAtual,
+                text: textoComentario,
+                created_at: new Date().toISOString()
+            });
+
+            const { error: updateError } = await supabase
+                .from('posts')
+                .update({ comments: comentariosAtuais })
+                .eq('id', postId);
+
+            if (updateError) {
+                alert("Erro ao salvar comentário.");
+                return;
+            }
+
+            input.value = '';
+            await carregarComentariosNoCard(postId);
+            carregarPerfilPublico();
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        carregarPerfilPublico();
+    </script>
+</body>
+</html>

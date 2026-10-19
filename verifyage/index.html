@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Verificação de Idade - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border: 2px solid #d7ccc8;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(111, 78, 55, 0.05);
+        }
+        h1 {
+            font-size: 1.6rem;
+            color: #6d4c41;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 0.95rem;
+            color: #8d6e63;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #8d6e63;
+            color: white;
+            transition: background 0.2s;
+            margin-bottom: 10px;
+        }
+        .btn:hover {
+            background-color: #6d4c41;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status-msg {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+    </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<style id="ddl-global-font">
+  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+    font-family: 'Bricolage Grotesque', sans-serif !important;
+  }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🍮 Verificação Facial</h1>
+        <p>(1) Abre o seu navegador</p>
+        <p>(2) Digite https://www.docedleite.com.br/verifyage</p>
+        <p>(3) Verifique sua idade</p>
+        <button id="btn-skip" class="btn" style="background-color: #d7ccc8; color: #3e2723;">Voltar</button>
+    </div>
+
+    <!-- CDN externa do face-api.min.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1/dist/face-api.min.js"></script>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth: {
+                storage: window.localStorage,
+                persistSession: true,
+                autoRefreshToken: true,
+            }
+        });
+
+        const video = document.getElementById('webcam');
+        const statusDiv = document.getElementById('status');
+        const btnVerify = document.getElementById('btn-verify');
+        const btnSkip = document.getElementById('btn-skip');
+
+        let cameraReady = false;
+        let modelsLoaded = false;
+
+        // Intercepta requisições fetch para corrigir automaticamente erros de sintaxe ou tradução nos JSONs dos modelos
+        const originalFetch = window.fetch;
+        window.fetch = async function(resource, init) {
+            const response = await originalFetch(resource, init);
+            if (typeof resource === 'string' && resource.endsWith('weights_manifest.json')) {
+                try {
+                    const text = await response.text();
+                    const fixedText = text
+                        .replace(/"nome":/g, '"name":')
+                        .replace(/"formato":/g, '"shape":')
+                        .replace(/"quantização":/g, '"quantization":')
+                        .replace(/"escala":/g, '"scale":');
+                    
+                    return new Response(fixedText, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: response.headers
+                    });
+                } catch (e) {
+                    console.error("Erro ao interceptar manifesto:", e);
+                }
+            }
+            return response;
+        };
+
+        async function solicitarPermissaoCamera() {
+            try {
+                statusDiv.textContent = 'Solicitando permissão da câmera...';
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
+                });
+                video.srcObject = stream;
+                cameraReady = true;
+                verificarProntidao();
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Permissão de câmera negada ou indisponível.';
+                statusDiv.className = 'status-msg error';
+            }
+        }
+
+        async function carregarModelos() {
+            try {
+                statusDiv.textContent = 'Carregando os arquivos de IA...';
+                
+                await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+                await faceapi.nets.ageGenderNet.loadFromUri('/models');
+                
+                modelsLoaded = true;
+                verificarProntidao();
+            } catch (err) {
+                console.error("Erro detalhado no carregamento:", err);
+                statusDiv.innerHTML = `Erro: ${err.message || err}`;
+                statusDiv.className = 'status-msg error';
+            }
+        }
+
+        function verificarProntidao() {
+            if (cameraReady && modelsLoaded) {
+                statusDiv.textContent = 'Pronto para verificar!';
+                statusDiv.className = 'status-msg success';
+                btnVerify.disabled = false;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await solicitarPermissaoCamera();
+            await carregarModelos();
+        });
+
+        btnVerify.addEventListener('click', async () => {
+            if (!cameraReady || !modelsLoaded) return;
+
+            btnVerify.disabled = true;
+            statusDiv.textContent = 'Analisando rosto...';
+            statusDiv.className = 'status-msg';
+
+            try {
+                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withAgeAndGender();
+
+                if (!detection) {
+                    statusDiv.textContent = 'Nenhum rosto encontrado. Aproxime-se!';
+                    statusDiv.className = 'status-msg error';
+                    btnVerify.disabled = false;
+                    return;
+                }
+
+                const idadeEstimada = Math.round(detection.age);
+                
+                // Regra solicitada: < 16 vira false, >= 16 vira true
+                const ageVerifiedValue = idadeEstimada >= 16;
+                const isAdultValue = idadeEstimada >= 18; // Mantém critério de maioridade proporcional se aplicável
+
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (session && session.user) {
+                    const { error } = await supabase
+                        .from('profiles')
+                        .update({ 
+                            age_verified: ageVerifiedValue, 
+                            is_adult: isAdultValue 
+                        })
+                        .eq('id', session.user.id);
+
+                    if (error) throw error;
+                }
+
+                statusDiv.textContent = `Idade estimada: ${idadeEstimada} anos. Atualizado com sucesso! Redirecionando...`;
+                statusDiv.className = 'status-msg success';
+
+                setTimeout(() => {
+                    window.location.href = '/fyp/';
+                }, 1500);
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.textContent = 'Erro ao processar dados.';
+                statusDiv.className = 'status-msg error';
+                btnVerify.disabled = false;
+            }
+        });
+
+        btnSkip.addEventListener('click', () => {
+            window.location.href = '/fyp/';
+        });
+    </script>
+</body>
+</html>
