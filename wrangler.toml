@@ -1,2 +1,6 @@
 # wrangler.toml
 name = 'en77275vqhr88174nha'
+
+[assets]
+directory = "."
+
