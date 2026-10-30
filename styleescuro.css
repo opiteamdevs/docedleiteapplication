@@ -1,0 +1,52 @@
+/* ==========================================================
+   🌙 MODO ESCURO GLOBAL - REDE DOCE DE LEITE
+   ========================================================== */
+
+/* Cores Padrão (Dark Mode Automático quando ativado no HTML) */
+html.dark-theme body {
+    background-color: #120c08 !important;
+    color: #f5f0eb !important;
+}
+
+html.dark-theme .container,
+html.dark-theme header,
+html.dark-theme nav,
+html.dark-theme .section-card,
+html.dark-theme .post-card {
+    background-color: #1e140e !important;
+    color: #f5f0eb !important;
+    border-color: #3e2723 !important;
+}
+
+html.dark-theme header h1,
+html.dark-theme .section-title {
+    color: #ffb74d !important;
+}
+
+html.dark-theme .form-control,
+html.dark-theme input,
+html.dark-theme textarea,
+html.dark-theme select {
+    background-color: #120c08 !important;
+    color: #f5f0eb !important;
+    border-color: #4e342e !important;
+}
+
+html.dark-theme .form-group label {
+    color: #d7ccc8 !important;
+}
+
+html.dark-theme .badge-status {
+    background-color: #3e2723 !important;
+    color: #ffb74d !important;
+}
+
+html.dark-theme nav a {
+    color: #d7ccc8 !important;
+}
+
+html.dark-theme nav a.active,
+html.dark-theme nav a:hover {
+    background-color: #2a1c14 !important;
+    color: #ffb74d !important;
+}
