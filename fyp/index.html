@@ -371,6 +371,7 @@
         let usuarioLogado = null;
         let perfilLogado = null;
         let postsGlobais = [];
+        let perfisGlobais = {};
         let filtroAtual = 'fyp';
         let postIdComGifAtivo = null;
 
@@ -446,11 +447,10 @@
         async function carregarDadosDoBanco() {
             const feedContainer = document.getElementById('feed-container');
 
-            // 🛠️ CORREÇÃO PRINCIPAL: Usamos o Inner Join nativo do Supabase (`profiles:creator(...)`) 
-            // para puxar os dados do autor direto com o post, evitando que fiquem órfãos como "desconhecido".
+            // Volta para a busca padrão de tabelas sem tentar Foreign Keys relacionais não-configuradas
             const [{ data: postsNormais, error: erroPosts }, { data: anuncios, error: erroAnuncios }] = await Promise.all([
-                supabase.from('posts').select('*, profiles:creator(username, is_verified, is_plus, isPlus)').eq('isddlAd', false).order('created_at', { ascending: false }).limit(20),
-                supabase.from('posts').select('*, profiles:creator(username, is_verified, is_plus, isPlus)').eq('isddlAd', true).order('created_at', { ascending: false }).limit(5)
+                supabase.from('posts').select('*').eq('isddlAd', false).order('created_at', { ascending: false }).limit(20),
+                supabase.from('posts').select('*').eq('isddlAd', true).order('created_at', { ascending: false }).limit(5)
             ]);
 
             if (erroPosts || erroAnuncios) {
@@ -468,6 +468,19 @@
             }
 
             postsGlobais = posts;
+
+            // Busca os perfis de forma segura e flexível (string vs uuid)
+            const creatorIds = [...new Set(posts.map(p => p.creator).filter(Boolean))];
+            if (creatorIds.length > 0) {
+                const { data: perfisAutores } = await supabase.from('profiles').select('*').in('id', creatorIds);
+                perfisGlobais = {};
+                if (perfisAutores) {
+                    perfisAutores.forEach(p => {
+                        perfisGlobais[p.id] = p;
+                    });
+                }
+            }
+
             renderizarFeed();
         }
 
@@ -515,8 +528,14 @@
             feedContainer.innerHTML = '';
 
             feedFinal.forEach(post => {
-                // Pega os dados do perfil que vieram direto da relação do Supabase
-                const autor = post.profiles || { username: 'desconhecido', is_verified: false, is_plus: false };
+                // Mapeia o autor e garante tratamento para username
+                const perfilEncontrado = perfisGlobais[post.creator];
+                const autor = perfilEncontrado || { 
+                    username: post.creator_username || post.author || 'desconhecido', 
+                    is_verified: false, 
+                    is_plus: false 
+                };
+
                 const ehAnon = post.isAnon === true;
                 const ehAd = post.isddlAd === true;
                 const likesArray = post.like || [];
