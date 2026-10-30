@@ -230,6 +230,58 @@
             font-size: 0.95rem;
         }
 
+        /* Modal de GIFs */
+        .gif-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .gif-modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid #d7ccc8;
+        }
+        .gif-modal-content h3 {
+            color: #8d6e63;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        .gif-modal-content input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d7ccc8;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        .gif-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .gif-preview-item {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #d7ccc8;
+            transition: transform 0.1s;
+        }
+        .gif-preview-item:hover {
+            transform: scale(1.03);
+        }
+
         nav {
             display: flex;
             border-top: 2px solid #d7ccc8;
@@ -264,18 +316,10 @@
         </header>
 
         <div class="filters-bar">
-            <button class="filter-btn active" onclick="mudarFiltro('fyp', this)">
-                🎯 Para Você
-            </button>
-            <button class="filter-btn" onclick="mudarFiltro('novidades', this)">
-                ✨ Novidades
-            </button>
-            <button class="filter-btn" onclick="mudarFiltro('popular', this)">
-                🔥 Mais Popular
-            </button>
-            <button class="filter-btn" onclick="mudarFiltro('media', this)">
-                ⚖️ Na Média
-            </button>
+            <button class="filter-btn active" onclick="mudarFiltro('fyp', this)">🎯 Para Você</button>
+            <button class="filter-btn" onclick="mudarFiltro('novidades', this)">✨ Novidades</button>
+            <button class="filter-btn" onclick="mudarFiltro('popular', this)">🔥 Mais Popular</button>
+            <button class="filter-btn" onclick="mudarFiltro('media', this)">⚖️ Na Média</button>
         </div>
 
         <div class="feed" id="feed-container">
@@ -289,6 +333,26 @@
             <a href="/createpost/">Criar Post</a>
             <a href="#" id="nav-meu-perfil">Meu Perfil</a>
         </nav>
+    </div>
+
+    <!-- Modal Seletor de GIFs -->
+    <div class="gif-modal" id="gifModal">
+        <div class="gif-modal-content">
+            <h3>🎬 Enviar GIF animado</h3>
+            <p style="font-size: 0.8rem; color: #6d4c41; margin-bottom: 8px;">Cole o link direto de um GIF (.gif) ou escolha abaixo:</p>
+            <input type="text" id="customGifUrlInput" placeholder="https://exemplo.com/imagem.gif">
+            <div style="font-size: 0.8rem; font-weight: bold; color: #8d6e63; margin-bottom: 6px;">Sugestões populares:</div>
+            <div class="gif-preview-grid" id="presetGifGrid">
+                <img src="https://media.giphy.com/media/3o7TKSjRrfIPjeiOkM/giphy.gif" class="gif-preview-item" onclick="selecionarGifPreset(this.src)">
+                <img src="https://media.giphy.com/media/l0HlP2gzL9lY45QIg/giphy.gif" class="gif-preview-item" onclick="selecionarGifPreset(this.src)">
+                <img src="https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif" class="gif-preview-item" onclick="selecionarGifPreset(this.src)">
+                <img src="https://media.giphy.com/media/13CoXDiaCcCoyk/giphy.gif" class="gif-preview-item" onclick="selecionarGifPreset(this.src)">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button onclick="fecharModalGif()" style="padding: 6px 12px; background: #d7ccc8; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Cancelar</button>
+                <button onclick="confirmarGifCustomizado()" style="padding: 6px 12px; background: #8d6e63; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Usar este GIF</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -309,6 +373,7 @@
         let postsGlobais = [];
         let perfisGlobais = {};
         let filtroAtual = 'fyp';
+        let postIdComGifAtivo = null;
 
         const listaNegraPalavras = [
             "spam", "scam", "phishing", "hack", "hacker", "cracker", "bot",
@@ -331,21 +396,15 @@
             });
         }
 
-        // Renderiza GIFs e mídias se houver link na propriedade post.media_url ou formatado no texto
         function processarMidiaOuGif(post) {
             let midiaUrl = post.media_url || '';
-            
-            // Se não tiver campo próprio, tenta extrair link de gif do texto (ex: tenor, giphy ou .gif)
             if (!midiaUrl && post.title) {
                 const regexGif = /(https?:\/\/[^\s]+?\.(gif|webp))|(https?:\/\/(media\.giphy\.com|media\d?\.giphy\.com|c\.tenor\.com|tenor\.com)[^\s]+)/i;
                 const match = post.title.match(regexGif);
-                if (match) {
-                    midiaUrl = match[0];
-                }
+                if (match) midiaUrl = match[0];
             }
-
             if (midiaUrl) {
-                return `<img src="${escapeHtml(midiaUrl)}" alt="GIF/Mídia do post" class="post-media" loading="lazy">`;
+                return `<img src="${escapeHtml(midiaUrl)}" alt="GIF/Mídia" class="post-media" loading="lazy">`;
             }
             return '';
         }
@@ -355,8 +414,7 @@
             const comentarios = post.comments?.length || 0;
             const engajamentoScore = (likes * 1.5) + (comentarios * 3.0);
             const horasDesdeCriacao = Math.max(0.1, (new Date() - new Date(post.created_at)) / (1000 * 60 * 60));
-            const gravity = 1.8;
-            return (engajamentoScore + 1) / Math.pow(horasDesdeCriacao + 2, gravity);
+            return (engajamentoScore + 1) / Math.pow(horasDesdeCriacao + 2, 1.8);
         }
 
         async function initFYP() {
@@ -399,10 +457,8 @@
                 return;
             }
 
-            // Se o usuário for Plus (is_plus === true), bloqueia/filtra os anúncios totalmente! 🚫📢
             const usuarioEhPlus = perfilLogado && (perfilLogado.is_plus === true || perfilLogado.isPlus === true);
             const postsAnunciosParaExibir = usuarioEhPlus ? [] : (anuncios || []);
-
             const posts = [...(postsNormais || []), ...postsAnunciosParaExibir];
 
             if (posts.length === 0) {
@@ -449,7 +505,6 @@
 
             const usuarioEhPlus = perfilLogado && (perfilLogado.is_plus === true || perfilLogado.isPlus === true);
             const normais = postsFiltrados.filter(p => !p.isddlAd);
-            // Se for plus, garante zero anúncios no feed intercalado
             const ads = usuarioEhPlus ? [] : postsFiltrados.filter(p => p.isddlAd);
             
             let feedFinal = [];
@@ -500,8 +555,9 @@
                     <div id="comments-section-${post.id}" style="display: none; margin-top: 12px; border-top: 1px dashed #d7ccc8; padding-top: 10px;">
                         <div id="comments-list-${post.id}" style="max-height: 150px; overflow-y: auto; margin-bottom: 8px; font-size: 0.9rem;"></div>
                         ${ehAd ? `<div style="color: #8d6e63; font-size: 0.85rem; font-style: italic; text-align: center;">🚫 Comentários desativados para anúncios.</div>` : `
-                            <div style="display: flex; gap: 8px;">
+                            <div style="display: flex; gap: 6px; align-items: center;">
                                 <input type="text" id="comment-input-${post.id}" placeholder="Escreva um comentário..." style="flex: 1; padding: 6px 10px; border: 1px solid #d7ccc8; border-radius: 6px; font-size: 0.85rem; outline: none;">
+                                <button onclick="abrirModalGif(${post.id})" title="Enviar GIF" style="background: #f5f0eb; border: 1px solid #d7ccc8; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 0.9rem;">🎞️</button>
                                 <button onclick="enviarComentario(${post.id})" style="padding: 6px 12px; background: #8d6e63; color: white; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: bold;">Enviar</button>
                             </div>
                         `}
@@ -509,6 +565,64 @@
                 `;
                 feedContainer.appendChild(card);
             });
+        }
+
+        // 🎬 Funções de controle do Modal de GIFs para Comentários
+        window.abrirModalGif = function(postId) {
+            postIdComGifAtivo = postId;
+            document.getElementById('customGifUrlInput').value = '';
+            document.getElementById('gifModal').style.display = 'flex';
+        }
+
+        window.fecharModalGif = function() {
+            document.getElementById('gifModal').style.display = 'none';
+            postIdComGifAtivo = null;
+        }
+
+        window.selecionarGifPreset = function(urlGif) {
+            enviarComentarioComGif(urlGif);
+        }
+
+        window.confirmarGifCustomizado = function() {
+            const url = document.getElementById('customGifUrlInput').value.trim();
+            if (!url) {
+                alert("Cole um link de GIF válido!");
+                return;
+            }
+            enviarComentarioComGif(url);
+        }
+
+        async function enviarComentarioComGif(gifUrl) {
+            if (!postIdComGifAtivo) return;
+            const postId = postIdComGifAtivo;
+            fecharModalGif();
+            
+            if (!usuarioLogado) {
+                alert("Faça login para comentar com GIF! 🔒");
+                window.location.href = '/acesso/login/';
+                return;
+            }
+
+            const postRef = postsGlobais.find(p => p.id === postId);
+            if (!postRef || postRef.isddlAd) return;
+
+            const { data: perfil } = await supabase.from('profiles').select('username').eq('id', usuarioLogado.id).single();
+
+            const novoComentario = {
+                user_id: usuarioLogado.id,
+                username: perfil ? perfil.username : 'anonimo',
+                text: `<img src="${escapeHtml(gifUrl)}" alt="GIF" style="max-width: 150px; border-radius: 6px; display: block; margin-top: 4px;">`,
+                created_at: new Date().toISOString()
+            };
+
+            if (!postRef.comments) postRef.comments = [];
+            postRef.comments.push(novoComentario);
+
+            const commentCount = document.getElementById(`comment-count-${postId}`);
+            if (commentCount) commentCount.textContent = postRef.comments.length;
+
+            await carregarComentariosNoCard(postId);
+            await supabase.from('posts').update({ comments: postRef.comments }).eq('id', postId);
         }
 
         window.curtirPost = async function(postId) {
@@ -564,8 +678,9 @@
             }
 
             listContainer.innerHTML = comentarios.map(c => `
-                <div style="margin-bottom: 6px;">
-                    <strong>@${escapeHtml(c.username)}:</strong> ${escapeHtml(c.text)}
+                <div style="margin-bottom: 8px;">
+                    <strong>@${escapeHtml(c.username)}:</strong> 
+                    <span>${c.text.startsWith('<img') ? c.text : escapeHtml(c.text)}</span>
                 </div>
             `).join('');
         }
