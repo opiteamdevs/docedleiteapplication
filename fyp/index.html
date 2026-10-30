@@ -39,6 +39,17 @@
             margin-left: 4px;
         }
 
+        .plus-badge {
+            background: linear-gradient(135deg, #ffb74d, #f57c00);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
         .container {
             width: 100%;
             max-width: 600px;
@@ -174,6 +185,15 @@
             word-break: break-word;
         }
 
+        .post-media {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+
         .post-actions {
             display: flex;
             gap: 15px;
@@ -285,6 +305,7 @@
         });
 
         let usuarioLogado = null;
+        let perfilLogado = null;
         let postsGlobais = [];
         let perfisGlobais = {};
         let filtroAtual = 'fyp';
@@ -301,29 +322,40 @@
             "corno", "vagabundo", "golpe", "piramide"
         ];
 
-        // 🛡️ Filtro Avançado com Suporte a Acentos e Limpeza de Espaços
         function verificarConteudoProibido(texto) {
             if (!texto) return false;
             const textoNormalizado = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            
             return listaNegraPalavras.some(palavra => {
                 const regex = new RegExp(`\\b${palavra}\\b`, 'i');
                 return regex.test(textoNormalizado);
             });
         }
 
-        // 🧠 Algoritmo Inteligente de Ranking FYP (Decay Temporal + Engajamento)
+        // Renderiza GIFs e mídias se houver link na propriedade post.media_url ou formatado no texto
+        function processarMidiaOuGif(post) {
+            let midiaUrl = post.media_url || '';
+            
+            // Se não tiver campo próprio, tenta extrair link de gif do texto (ex: tenor, giphy ou .gif)
+            if (!midiaUrl && post.title) {
+                const regexGif = /(https?:\/\/[^\s]+?\.(gif|webp))|(https?:\/\/(media\.giphy\.com|media\d?\.giphy\.com|c\.tenor\.com|tenor\.com)[^\s]+)/i;
+                const match = post.title.match(regexGif);
+                if (match) {
+                    midiaUrl = match[0];
+                }
+            }
+
+            if (midiaUrl) {
+                return `<img src="${escapeHtml(midiaUrl)}" alt="GIF/Mídia do post" class="post-media" loading="lazy">`;
+            }
+            return '';
+        }
+
         function calcularPontuacaoPost(post) {
             const likes = post.like?.length || 0;
             const comentarios = post.comments?.length || 0;
-            
-            // Peso de Engajamento: Comentários valem mais que curtidas
             const engajamentoScore = (likes * 1.5) + (comentarios * 3.0);
-            
-            // Relevância Temporal (decay logarítmico em horas)
             const horasDesdeCriacao = Math.max(0.1, (new Date() - new Date(post.created_at)) / (1000 * 60 * 60));
             const gravity = 1.8;
-            
             return (engajamentoScore + 1) / Math.pow(horasDesdeCriacao + 2, gravity);
         }
 
@@ -342,6 +374,7 @@
                     .single();
 
                 if (perfil) {
+                    perfilLogado = perfil;
                     if (perfil.age_verified !== true) {
                         window.location.href = "https://m.docedleite.com.br/verifyage";
                         return;
@@ -366,7 +399,11 @@
                 return;
             }
 
-            const posts = [...(postsNormais || []), ...(anuncios || [])];
+            // Se o usuário for Plus (is_plus === true), bloqueia/filtra os anúncios totalmente! 🚫📢
+            const usuarioEhPlus = perfilLogado && (perfilLogado.is_plus === true || perfilLogado.isPlus === true);
+            const postsAnunciosParaExibir = usuarioEhPlus ? [] : (anuncios || []);
+
+            const posts = [...(postsNormais || []), ...postsAnunciosParaExibir];
 
             if (posts.length === 0) {
                 feedContainer.innerHTML = `<div class="empty-feed">Ainda não há publicações. Seja o primeiro! 🌟</div>`;
@@ -375,9 +412,8 @@
 
             postsGlobais = posts;
 
-            // Busca profiles em batch eficiente
             const creatorIds = [...new Set(posts.map(p => p.creator))];
-            const { data: perfisAutores } = await supabase.from('profiles').select('id, username, is_verified').in('id', creatorIds);
+            const { data: perfisAutores } = await supabase.from('profiles').select('id, username, is_verified, is_plus, isPlus').in('id', creatorIds);
 
             perfisGlobais = {};
             if (perfisAutores) perfisAutores.forEach(p => perfisGlobais[p.id] = p);
@@ -399,7 +435,6 @@
 
             let postsFiltrados = [...postsGlobais];
 
-            // Aplicação dos Algoritmos de Ordenação
             if (filtroAtual === 'fyp') {
                 postsFiltrados.sort((a, b) => calcularPontuacaoPost(b) - calcularPontuacaoPost(a));
             } else if (filtroAtual === 'popular') {
@@ -412,9 +447,11 @@
                 postsFiltrados.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
             }
 
-            // Separação e Intercalação Estratégica de Anúncios (Patrocinados a cada 3 posts)
+            const usuarioEhPlus = perfilLogado && (perfilLogado.is_plus === true || perfilLogado.isPlus === true);
             const normais = postsFiltrados.filter(p => !p.isddlAd);
-            const ads = postsFiltrados.filter(p => p.isddlAd);
+            // Se for plus, garante zero anúncios no feed intercalado
+            const ads = usuarioEhPlus ? [] : postsFiltrados.filter(p => p.isddlAd);
+            
             let feedFinal = [];
             let adIndex = 0;
 
@@ -429,12 +466,13 @@
             feedContainer.innerHTML = '';
 
             feedFinal.forEach(post => {
-                const autor = perfisGlobais[post.creator] || { username: 'desconhecido', is_verified: false };
+                const autor = perfisGlobais[post.creator] || { username: 'desconhecido', is_verified: false, is_plus: false };
                 const ehAnon = post.isAnon === true;
                 const ehAd = post.isddlAd === true;
                 const likesArray = post.like || [];
                 const euCurti = usuarioLogado ? likesArray.includes(usuarioLogado.id) : false;
                 const comentariosArray = post.comments || [];
+                const autorTemPlus = autor.is_plus === true || autor.isPlus === true;
 
                 const card = document.createElement('div');
                 card.className = `post-card ${ehAd ? 'is-ad' : ''}`;
@@ -444,11 +482,12 @@
                     ? '<div class="ad-badge">📢 Patrocinado</div>' 
                     : ehAnon 
                         ? `<span class="post-author">🕵️ @anon</span>` 
-                        : `<a href="/u/?q=${encodeURIComponent(autor.username)}" class="post-author">@${escapeHtml(autor.username)}${autor.is_verified ? '<img src="/verify.png" alt="Verificado" class="verified-badge">' : ''}</a>`;
+                        : `<a href="/u/?q=${encodeURIComponent(autor.username)}" class="post-author">@${escapeHtml(autor.username)}${autor.is_verified ? '<img src="/verify.png" alt="Verificado" class="verified-badge">' : ''}${autorTemPlus ? '<span class="plus-badge">PLUS</span>' : ''}</a>`;
 
                 card.innerHTML = `
                     ${autorHTML}
                     <div class="post-content">${escapeHtml(post.title)}</div>
+                    ${processarMidiaOuGif(post)}
                     <div class="post-actions">
                         <button class="action-btn ${euCurti ? 'liked' : ''}" id="like-btn-${post.id}" onclick="curtirPost(${post.id})">
                             ❤️ <span id="like-count-${post.id}">${likesArray.length}</span>
@@ -493,7 +532,6 @@
 
             post.like = likes;
 
-            // Atualização de UI em tempo real sem re-renderizar todo o feed!
             const likeBtn = document.getElementById(`like-btn-${postId}`);
             const likeCount = document.getElementById(`like-count-${postId}`);
             
@@ -540,7 +578,7 @@
             }
 
             const postRef = postsGlobais.find(p => p.id === postId);
-               if (postRef?.isddlAd) return;
+            if (postRef?.isddlAd) return;
 
             const input = document.getElementById(`comment-input-${postId}`);
             const textoComentario = input.value.trim();
@@ -566,7 +604,6 @@
 
             input.value = '';
             
-            // Atualiza contagem local
             const commentCount = document.getElementById(`comment-count-${postId}`);
             if (commentCount) commentCount.textContent = postRef.comments.length;
 
