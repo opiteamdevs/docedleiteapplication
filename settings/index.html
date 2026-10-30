@@ -6,13 +6,6 @@
     <title>Configurações - Rede Doce de Leite</title>
     <meta name="theme-color" content="#8d6e63">
 
-    <!-- 🌙 SCRIPT INICIALIZADOR: Aplica o tema escuro ANTES de renderizar para evitar tela branca -->
-    <script>
-        if (localStorage.getItem('ddl_theme') === 'dark') {
-            document.documentElement.classList.add('dark-theme');
-        }
-    </script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
@@ -35,13 +28,6 @@
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* 🌙 FORÇANDO O MODO ESCURO ABSOLUTO */
-        html.dark-theme body {
-            background-color: #120c08 !important;
-            color: #f5f0eb !important;
         }
 
         .container {
@@ -53,12 +39,6 @@
             border-right: 2px solid #d7ccc8;
             display: flex;
             flex-direction: column;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        html.dark-theme .container {
-            background: #1e140e !important;
-            border-color: #3e2723 !important;
         }
 
         header {
@@ -71,21 +51,11 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        html.dark-theme header {
-            background-color: #1e140e !important;
-            border-color: #3e2723 !important;
         }
 
         header h1 {
             font-size: 1.2rem;
             color: #8d6e63;
-        }
-
-        html.dark-theme header h1 {
-            color: #ffb74d !important;
         }
 
         .content {
@@ -101,12 +71,6 @@
             padding: 18px;
             margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(111, 78, 55, 0.05);
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        html.dark-theme .section-card {
-            background: #2a1c14 !important;
-            border-color: #4e342e !important;
         }
 
         .section-title {
@@ -117,10 +81,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        html.dark-theme .section-title {
-            color: #ffb74d !important;
         }
 
         .form-group {
@@ -135,10 +95,6 @@
             color: #6d4c41;
         }
 
-        html.dark-theme .form-group label {
-            color: #d7ccc8 !important;
-        }
-
         .form-control {
             width: 100%;
             padding: 10px 12px;
@@ -148,13 +104,7 @@
             outline: none;
             background: #fffaf0;
             color: #3e2723;
-            transition: all 0.2s;
-        }
-
-        html.dark-theme .form-control {
-            background: #120c08 !important;
-            color: #f5f0eb !important;
-            border-color: #4e342e !important;
+            transition: border 0.2s;
         }
 
         .form-control:focus {
@@ -206,20 +156,9 @@
             color: #8d6e63;
         }
 
-        html.dark-theme .badge-status {
-            background: #3e2723 !important;
-            color: #ffb74d !important;
-        }
-
         .badge-status.is-plus {
             background: linear-gradient(135deg, #ffb74d, #f57c00);
             color: white;
-        }
-
-        .toggle-switch {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
         nav {
@@ -228,12 +167,6 @@
             background: #fff;
             position: sticky;
             bottom: 0;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        html.dark-theme nav {
-            background: #1e140e !important;
-            border-color: #3e2723 !important;
         }
 
         nav a {
@@ -246,18 +179,9 @@
             font-size: 0.9rem;
         }
 
-        html.dark-theme nav a {
-            color: #d7ccc8 !important;
-        }
-
         nav a.active {
             background-color: #f5f0eb;
             color: #3e2723;
-        }
-
-        html.dark-theme nav a.active {
-            background-color: #2a1c14 !important;
-            color: #ffb74d !important;
         }
     </style>
 </head>
@@ -302,9 +226,6 @@
                 </form>
             </div>
 
-            <!-- 🎨 Apaparência -->
-            
-
             <!-- 🚪 Sair -->
             <div class="section-card">
                 <button id="btnLogout" class="btn-danger">Sair da Conta 🚪</button>
@@ -328,22 +249,6 @@
 
         let usuarioLogado = null;
         let perfilLogado = null;
-
-        // 🌗 Gerenciador do Toggle de Modo Escuro Forçado
-        const darkToggle = document.getElementById('darkModeToggle');
-        if (localStorage.getItem('ddl_theme') === 'dark') {
-            darkToggle.checked = true;
-        }
-
-        darkToggle.addEventListener('change', () => {
-            if (darkToggle.checked) {
-                document.documentElement.classList.add('dark-theme');
-                localStorage.setItem('ddl_theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark-theme');
-                localStorage.setItem('ddl_theme', 'light');
-            }
-        });
 
         async function initSettings() {
             const { data: { session } } = await supabase.auth.getSession();
