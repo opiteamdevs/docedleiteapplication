@@ -60,7 +60,7 @@ header a:hover { text-decoration: underline; }
 .team-badge {
     display: block;
     width: fit-content;
-    margin: 0 auto 12px auto; /* Centraliza perfeitamente no topo */
+    margin: 0 auto 12px auto;
     background-color: #f5f0eb;
     color: #6d4c41;
     border: 1px solid #d7ccc8;
@@ -217,7 +217,6 @@ nav a:hover, nav a.active {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
     </style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -239,18 +238,20 @@ nav a:hover, nav a.active {
 
         <div id="profile-container">
             <div class="loading-container">
-    <div class="spinner"></div>
-</div>
+                <div class="spinner"></div>
+            </div>
         </div>
-<nav> <a href="/fyp/">Início</a> <a href="/createpost/">Criar Post</a> <a href="#" id="nav-meu-perfil" class="active">Meu Perfil</a> 
-   </nav> 
+        <nav> 
+            <a href="/fyp/">Início</a> 
+            <a href="/createpost/">Criar Post</a> 
+            <a href="#" id="nav-meu-perfil" class="active">Meu Perfil</a> 
+        </nav> 
     </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
         import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
 
-        
         const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
             auth: {
                 storage: window.localStorage,
@@ -276,10 +277,7 @@ nav a:hover, nav a.active {
             for (let palavra of listaNegraPalavras) {
                 const regex = new RegExp(`\\b${palavra}\\b`, 'i');
                 if (regex.test(textoFormatado) || textoFormatado.includes(palavra)) {
-                    return {
-                        detected: "blocknow()",
-                        Violation: "violation of guidelines"
-                    };
+                    return { detected: "blocknow()", Violation: "violation of guidelines" };
                 }
             }
             return null;
@@ -341,12 +339,11 @@ nav a:hover, nav a.active {
                 ? ' <img src="/verify.png" alt="Verificado" title="Verificado" style="width: 20px; height: 20px; vertical-align: middle; display: inline-block;">'
                 : '';
 
-            // Verificação do isTeam para mostrar o selo da equipe em cima do perfil
             const badgeTeam = perfil.isTeam 
                 ? `<div class="team-badge">🛡️ O usuário faz parte da equipe do DL</div>` 
                 : '';
 
-                        container.innerHTML = `
+            container.innerHTML = `
                 <div class="profile-header">
                     ${badgeTeam}
                     <img src="${perfil.avatar_url || 'https://via.placeholder.com/90'}" class="avatar" alt="Avatar">
@@ -359,15 +356,14 @@ nav a:hover, nav a.active {
                     </div>
 
                     ${ehDono ? `
-  <button id="btn-toggle-edit" class="secondary">✏️ Editar Perfil</button><br><br>
-  <a href="/yourcandys" style="text-decoration: none;">
-    <button class="secondary">🍬 Ver Meus Doces</button>
-  </a>
-` : ''}
+                        <button id="btn-toggle-edit" class="secondary">✏️ Editar Perfil</button><br><br>
+                        <a href="/yourcandys" style="text-decoration: none;">
+                            <button class="secondary">🍬 Ver Meus Doces</button>
+                        </a>
+                    ` : ''}
 
                     ${!ehDono && meuId ? `<button id="btn-seguir">${euSigoEste ? 'Seguindo' : 'Seguir'}</button>` : ''}
                 </div>
-
 
                 ${ehDono ? `
                     <div class="edit-box" id="edit-box">
@@ -525,66 +521,32 @@ nav a:hover, nav a.active {
                 likes.push(session.user.id);
             }
 
-            const { error } = await supabase.from('posts').update({ like: likes }).eq('id', postId);
-            if (!error) {
-                carregarPerfilPublico();
-            }
+            await supabase.from('posts').update({ like: likes }).eq('id', postId);
+          carregarPerfilPublico();
         };
 
         window.toggleComentarios = async function(postId) {
             const section = document.getElementById(`comments-section-${postId}`);
             if (!section) return;
-
-            if (section.style.display === 'none') {
-                section.style.display = 'block';
-                await carregarComentariosNoCard(postId);
-            } else {
-                section.style.display = 'none';
+            const abrir = section.style.display === 'none';
+            section.style.display = abrir ? 'block' : 'none';
+            if (abrir) {
+                const { data: post } = await supabase.from('posts').select('comments').eq('id', postId).single();
+                const listContainer = document.getElementById(`comments-list-${postId}`);
+                const comentarios = post?.comments || [];
+                if (comentarios.length === 0) {
+                    listContainer.innerHTML = '<div style="color: #8d6e63; font-size: 0.85rem; font-style: italic;">Nenhum comentário ainda.</div>';
+                    return;
+                }
+                listContainer.innerHTML = comentarios.map(c => `
+                    <div style="margin-bottom: 6px;">
+                        <strong>@${escapeHtml(c.username)}:</strong> ${escapeHtml(c.text)}
+                    </div>
+                `).join('');
             }
         };
 
-        async function carregarComentariosNoCard(postId) {
-     const listContainer = document.getElementById(`comments-list-${postId}`);
-            if (!listContainer) return;
-            listContainer.innerHTML = '<div style="color: #8d6e63; font-size: 0.85rem;">Carregando comentários...</div>';
-
-            const { data: post, error } = await supabase
-                .from('posts')
-                .select('comments')
-                .eq('id', postId)
-                .single();
-
-            if (error || !post) {
-                listContainer.innerHTML = '<div style="color: #d32f2f; font-size: 0.85rem;">Erro ao carregar.</div>';
-                return;
-            }
-
-            const comentarios = post.comments || [];
-            if (comentarios.length === 0) {
-                listContainer.innerHTML = '<div style="color: #8d6e63; font-size: 0.85rem; font-style: italic;">Nenhum comentário ainda.</div>';
-                return;
-            }
-
-            listContainer.innerHTML = '';
-            comentarios.forEach(c => {
-                const item = document.createElement('div');
-                item.style.marginBottom = '6px';
-                item.innerHTML = `<strong>@${escapeHtml(c.username)}:</strong> ${escapeHtml(c.text)}`;
-                listContainer.appendChild(item);
-            });
-        }
-
         window.enviarComentarioPerfil = async function(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const textoComentario = input.value.trim();
-            if (!textoComentario) return;
-
-            const resultadoValidacao = verificarConteudoProibido(textoComentario);
-            if (resultadoValidacao) {
-                alert("⚠️ Seu comentário violou as diretrizes da comunidade Doce de Leite e foi barrado.");
-                return;
-            }
-
             const { data: { session } } = await supabase.auth.getSession();
             if (!session || !session.user) {
                 alert("User is not logged in");
@@ -592,53 +554,38 @@ nav a:hover, nav a.active {
                 return;
             }
 
-            const { data: perfilAtivoData } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', session.user.id)
-                .single();
+            const input = document.getElementById(`comment-input-${postId}`);
+            const texto = input.value.trim();
+            if (!texto) return;
 
-            const usernameAtual = perfilAtivoData ? perfilAtivoData.username : 'anonimo';
-
-            const { data: postAtual, error: fetchError } = await supabase
-                .from('posts')
-                .select('comments')
-                .eq('id', postId)
-                .single();
-
-            if (fetchError || !postAtual) {
-                alert("Erro ao enviar comentário.");
+            if (verificarConteudoProibido(texto)) {
+                alert("⚠️ Comentário barrado pelas diretrizes.");
                 return;
             }
 
-            let comentariosAtuais = postAtual.comments || [];
-            comentariosAtuais.push({
+            const { data: perfil } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
+            const username = perfil ? perfil.username : 'anonimo';
+
+            const { data: post } = await supabase.from('posts').select('comments').eq('id', postId).single();
+            const comentarios = post?.comments || [];
+            comentarios.push({
                 user_id: session.user.id,
-                username: usernameAtual,
-                text: textoComentario,
+                username: username,
+                text: texto,
                 created_at: new Date().toISOString()
             });
 
-            const { error: updateError } = await supabase
-                .from('posts')
-                .update({ comments: comentariosAtuais })
-                .eq('id', postId);
-
-            if (updateError) {
-                alert("Erro ao salvar comentário.");
-                return;
-            }
-
+            await supabase.from('posts').update({ comments: comentarios }).eq('id', postId);
             input.value = '';
-            await carregarComentariosNoCard(postId);
-            carregarPerfilPublico();
+            toggleComentarios(postId);
+            toggleComentarios(postId);
         };
 
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
         }
 
         carregarPerfilPublico();
