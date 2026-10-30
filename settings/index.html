@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Configurações - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+
+    <!-- 🌙 SCRIPT INICIALIZADOR: Aplica o tema escuro ANTES de renderizar para evitar tela branca -->
+    <script>
+        if (localStorage.getItem('ddl_theme') === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+            font-family: 'Bricolage Grotesque', sans-serif !important;
+        }
+
+        body {
+            background-color: #fffaf0;
+            color: #3e2723;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* 🌙 FORÇANDO O MODO ESCURO ABSOLUTO */
+        html.dark-theme body {
+            background-color: #120c08 !important;
+            color: #f5f0eb !important;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            min-height: 100vh;
+            border-left: 2px solid #d7ccc8;
+            border-right: 2px solid #d7ccc8;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme .container {
+            background: #1e140e !important;
+            border-color: #3e2723 !important;
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme header {
+            background-color: #1e140e !important;
+            border-color: #3e2723 !important;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: #8d6e63;
+        }
+
+        html.dark-theme header h1 {
+            color: #ffb74d !important;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(111, 78, 55, 0.05);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme .section-card {
+            background: #2a1c14 !important;
+            border-color: #4e342e !important;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #8d6e63;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        html.dark-theme .section-title {
+            color: #ffb74d !important;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #6d4c41;
+        }
+
+        html.dark-theme .form-group label {
+            color: #d7ccc8 !important;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d7ccc8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background: #fffaf0;
+            color: #3e2723;
+            transition: all 0.2s;
+        }
+
+        html.dark-theme .form-control {
+            background: #120c08 !important;
+            color: #f5f0eb !important;
+            border-color: #4e342e !important;
+        }
+
+        .form-control:focus {
+            border-color: #8d6e63;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #8d6e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 12px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background: #f5f0eb;
+            color: #8d6e63;
+        }
+
+        html.dark-theme .badge-status {
+            background: #3e2723 !important;
+            color: #ffb74d !important;
+        }
+
+        .badge-status.is-plus {
+            background: linear-gradient(135deg, #ffb74d, #f57c00);
+            color: white;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        nav {
+            display: flex;
+            border-top: 2px solid #d7ccc8;
+            background: #fff;
+            position: sticky;
+            bottom: 0;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme nav {
+            background: #1e140e !important;
+            border-color: #3e2723 !important;
+        }
+
+        nav a {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            color: #8d6e63;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        html.dark-theme nav a {
+            color: #d7ccc8 !important;
+        }
+
+        nav a.active {
+            background-color: #f5f0eb;
+            color: #3e2723;
+        }
+
+        html.dark-theme nav a.active {
+            background-color: #2a1c14 !important;
+            color: #ffb74d !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>⚙️ Configurações</h1>
+            <span id="accountBadge" class="badge-status">Carregando...</span>
+        </header>
+
+        <div class="content">
+            <!-- 👤 Editar Perfil -->
+            <div class="section-card">
+                <div class="section-title">👤 Editar Perfil</div>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label>Nome de Usuário (@):</label>
+                        <input type="text" id="inputUsername" class="form-control" placeholder="Seu username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Foto de Perfil:</label>
+                        <input type="url" id="inputAvatar" class="form-control" placeholder="https://link-da-sua-foto.jpg">
+                    </div>
+                    <div class="form-group">
+                        <label>Biografia / Sobre você:</label>
+                        <textarea id="inputBio" class="form-control" placeholder="Escreva algo doce sobre você..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+
+            <!-- 🔒 Alterar Senha -->
+            <div class="section-card">
+                <div class="section-title">🔒 Segurança</div>
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label>Nova Senha:</label>
+                        <input type="password" id="inputNewPassword" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="background-color: #6d4c41;">Atualizar Senha</button>
+                </form>
+            </div>
+
+            <!-- 🎨 Apaparência -->
+            <div class="section-card">
+                <div class="section-title">🎨 Personalização</div>
+                <div class="toggle-switch">
+                    <span style="font-size: 0.9rem; font-weight: bold;">Forçar Modo Escuro:</span>
+                    <input type="checkbox" id="darkModeToggle" style="width: 20px; height: 20px; cursor: pointer;">
+                </div>
+            </div>
+
+            <!-- 🚪 Sair -->
+            <div class="section-card">
+                <button id="btnLogout" class="btn-danger">Sair da Conta 🚪</button>
+            </div>
+        </div>
+
+        <nav>
+            <a href="/fyp/">Início</a>
+            <a href="/createpost/">Criar Post</a>
+            <a href="#" id="navMeuPerfil">Meu Perfil</a>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth: { storage: window.localStorage, persistSession: true, autoRefreshToken: true }
+        });
+
+        let usuarioLogado = null;
+        let perfilLogado = null;
+
+        // 🌗 Gerenciador do Toggle de Modo Escuro Forçado
+        const darkToggle = document.getElementById('darkModeToggle');
+        if (localStorage.getItem('ddl_theme') === 'dark') {
+            darkToggle.checked = true;
+        }
+
+        darkToggle.addEventListener('change', () => {
+            if (darkToggle.checked) {
+                document.documentElement.classList.add('dark-theme');
+                localStorage.setItem('ddl_theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                localStorage.setItem('ddl_theme', 'light');
+            }
+        });
+
+        async function initSettings() {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session?.user) {
+                alert("Você precisa estar logado para acessar as configurações! 🔒");
+                window.location.href = '/acesso/login/';
+                return;
+            }
+
+            usuarioLogado = session.user;
+
+            const { data: perfil } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', usuarioLogado.id)
+                .single();
+
+            if (perfil) {
+                perfilLogado = perfil;
+                document.getElementById('inputUsername').value = perfil.username || '';
+                document.getElementById('inputAvatar').value = perfil.avatar_url || perfil.avatar || '';
+                document.getElementById('inputBio').value = perfil.bio || '';
+                
+                document.getElementById('navMeuPerfil').href = `/u/?q=${encodeURIComponent(perfil.username)}`;
+
+                const badge = document.getElementById('accountBadge');
+                if (perfil.is_plus || perfil.isPlus) {
+                    badge.textContent = "⭐ Usuário PLUS";
+                    badge.classList.add('is-plus');
+                } else {
+                    badge.textContent = "🍮 Membro Doce";
+                }
+            }
+        }
+
+        // 💾 Salvar Perfil
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('inputUsername').value.trim();
+            const avatar = document.getElementById('inputAvatar').value.trim();
+            const bio = document.getElementById('inputBio').value.trim();
+
+            if (!username) return alert("Username é obrigatório!");
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ username, avatar_url: avatar, bio })
+                .eq('id', usuarioLogado.id);
+
+            if (error) {
+                alert("Erro ao salvar: " + error.message);
+            } else {
+                alert("Perfil atualizado com sucesso! ✨");
+                window.location.reload();
+            }
+        });
+
+        // 🔒 Alterar Senha
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('inputNewPassword').value;
+
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+            if (error) {
+                alert("Erro ao atualizar senha: " + error.message);
+            } else {
+                alert("Senha atualizada com sucesso! 🔐");
+                document.getElementById('inputNewPassword').value = '';
+            }
+        });
+
+        // 🚪 Logout
+        document.getElementById('btnLogout').addEventListener('click', async () => {
+            if (confirm("Deseja mesmo sair da sua conta?")) {
+                await supabase.auth.signOut();
+                window.location.href = '/acesso/login/';
+            }
+        });
+
+        initSettings();
+    </script>
+</body>
+</html>
