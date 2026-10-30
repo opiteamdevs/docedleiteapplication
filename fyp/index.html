@@ -371,7 +371,6 @@
         let usuarioLogado = null;
         let perfilLogado = null;
         let postsGlobais = [];
-        let perfisGlobais = {};
         let filtroAtual = 'fyp';
         let postIdComGifAtivo = null;
 
@@ -447,9 +446,11 @@
         async function carregarDadosDoBanco() {
             const feedContainer = document.getElementById('feed-container');
 
+            // 🛠️ CORREÇÃO PRINCIPAL: Usamos o Inner Join nativo do Supabase (`profiles:creator(...)`) 
+            // para puxar os dados do autor direto com o post, evitando que fiquem órfãos como "desconhecido".
             const [{ data: postsNormais, error: erroPosts }, { data: anuncios, error: erroAnuncios }] = await Promise.all([
-                supabase.from('posts').select('*').eq('isddlAd', false).order('created_at', { ascending: false }).limit(20),
-                supabase.from('posts').select('*').eq('isddlAd', true).order('created_at', { ascending: false }).limit(5)
+                supabase.from('posts').select('*, profiles:creator(username, is_verified, is_plus, isPlus)').eq('isddlAd', false).order('created_at', { ascending: false }).limit(20),
+                supabase.from('posts').select('*, profiles:creator(username, is_verified, is_plus, isPlus)').eq('isddlAd', true).order('created_at', { ascending: false }).limit(5)
             ]);
 
             if (erroPosts || erroAnuncios) {
@@ -467,13 +468,6 @@
             }
 
             postsGlobais = posts;
-
-            const creatorIds = [...new Set(posts.map(p => p.creator))];
-            const { data: perfisAutores } = await supabase.from('profiles').select('id, username, is_verified, is_plus, isPlus').in('id', creatorIds);
-
-            perfisGlobais = {};
-            if (perfisAutores) perfisAutores.forEach(p => perfisGlobais[p.id] = p);
-
             renderizarFeed();
         }
 
@@ -521,7 +515,8 @@
             feedContainer.innerHTML = '';
 
             feedFinal.forEach(post => {
-                const autor = perfisGlobais[post.creator] || { username: 'desconhecido', is_verified: false, is_plus: false };
+                // Pega os dados do perfil que vieram direto da relação do Supabase
+                const autor = post.profiles || { username: 'desconhecido', is_verified: false, is_plus: false };
                 const ehAnon = post.isAnon === true;
                 const ehAd = post.isddlAd === true;
                 const likesArray = post.like || [];
@@ -567,7 +562,6 @@
             });
         }
 
-        // 🎬 Funções de controle do Modal de GIFs para Comentários
         window.abrirModalGif = function(postId) {
             postIdComGifAtivo = postId;
             document.getElementById('customGifUrlInput').value = '';
