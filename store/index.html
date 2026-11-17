@@ -1,2 +1,596 @@
-<meta charset="UTF-8">
-<code>AINDA EM CRIAÇÃO, OBRIGADO, ATENCIOSAMENTE, DOCE DE LEITE CORPORATION</code>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Loja - Rede Doce de Leite</title>
+    <meta name="theme-color" content="#8d6e63">
+    
+    <!-- 🌙 MODO ESCURO EMBUTIDO -->
+    <script>
+        if (localStorage.getItem('ddl_theme') === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        }
+    </script>
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: #fffaf0;
+            color: #3e2723;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        html.dark-theme body {
+            background-color: #120c08 !important;
+            color: #f5f0eb !important;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 24px;
+            padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s;
+        }
+
+        html.dark-theme .container {
+            background: #1e140e !important;
+        }
+
+        header {
+            padding: 16px 20px;
+            border-bottom: 2px solid #d7ccc8;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: -24px -24px 24px -24px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme header {
+            background-color: #1e140e !important;
+            border-color: #3e2723 !important;
+        }
+
+        header h1 { 
+            font-size: 1.1rem; 
+            color: #8d6e63; 
+            font-weight: bold;
+        }
+
+        html.dark-theme header h1 {
+            color: #ffb74d !important;
+        }
+
+        /* 🍬 BANNER DE SALDO */
+        .balance-card {
+            background: linear-gradient(135deg, #8d6e63 0%, #6d4c41 100%);
+            color: #fffaf0;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(109, 76, 65, 0.2);
+        }
+
+        html.dark-theme .balance-card {
+            background: linear-gradient(135deg, #3e2723 0%, #2a1c14 100%) !important;
+            border: 1px solid #5d4037;
+        }
+
+        .balance-info span {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .balance-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        html.dark-theme .balance-value {
+            color: #ffb74d !important;
+        }
+
+        .balance-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .balance-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #6d4c41;
+            margin-bottom: 16px;
+        }
+
+        html.dark-theme .section-title {
+            color: #ffb74d !important;
+        }
+
+        /* 🛍️ GRADE DE PRODUTOS VIRTUAIS */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            background: #faf8f5;
+            border: 1px solid #d7ccc8;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s, background 0.3s;
+        }
+
+        html.dark-theme .product-card {
+            background: #2a1c14 !important;
+            border-color: #4e342e !important;
+        }
+
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .product-icon {
+            width: 48px;
+            height: 48px;
+            background: #fff;
+            border: 1px solid #d7ccc8;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        html.dark-theme .product-icon {
+            background: #120c08 !important;
+            border-color: #4e342e !important;
+        }
+
+        .product-icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #3e2723;
+        }
+
+        html.dark-theme .product-title {
+            color: #f5f0eb !important;
+        }
+
+        .product-price {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #8d6e63;
+            margin-top: 2px;
+        }
+
+        html.dark-theme .product-price {
+            color: #ffb74d !important;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: #5d4037;
+            line-height: 1.4;
+            margin-bottom: 18px;
+        }
+
+        html.dark-theme .product-desc {
+            color: #d7ccc8 !important;
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: #8d6e63;
+            color: white;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .btn-buy:hover:not(:disabled) {
+            background-color: #6d4c41;
+        }
+
+        .btn-buy:disabled {
+            background-color: #bcaaa4;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        html.dark-theme .btn-buy:disabled {
+            background-color: #3e2723 !important;
+            color: #8d6e63 !important;
+        }
+
+        .btn-buy.owned {
+            background-color: #4caf50 !important;
+            color: #fff !important;
+            opacity: 1 !important;
+        }
+
+        /* 🔔 TOAST DE FEEDBACK */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3e2723;
+            color: #fffaf0;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: none;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        html.dark-theme .toast {
+            background: #ffb74d;
+            color: #120c08;
+        }
+
+        /* 🧭 NAVEGAÇÃO INFERIOR */
+        nav {
+            display: flex;
+            border-top: 2px solid #d7ccc8;
+            background: #fff;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        html.dark-theme nav {
+            background-color: #1e140e !important;
+            border-color: #3e2723 !important;
+        }
+
+        nav a {
+            flex: 1;
+            text-align: center;
+            padding: 15px 5px;
+            text-decoration: none;
+            color: #8d6e63;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        html.dark-theme nav a { color: #d7ccc8 !important; }
+
+        nav a:hover, nav a.active {
+            background-color: #f5f0eb;
+            color: #3e2723;
+        }
+
+        html.dark-theme nav a:hover, html.dark-theme nav a.active {
+            background-color: #2a1c14 !important;
+            color: #ffb74d !important;
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 60px;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 4px solid #f5f0eb;
+            border-top: 4px solid #8d6e63;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+    <style id="ddl-global-font">
+      html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+        font-family: 'Bricolage Grotesque', sans-serif !important;
+      }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="container">
+        <header>
+            <h1>🛍️ Lojinha Doce de Leite</h1>
+            <a href="/yourcandys" style="color: #8d6e63; text-decoration: none; font-size: 0.9rem; font-weight: bold;">🍬 Doces</a>
+        </header>
+
+        <div id="store-content">
+            <div class="loading-container">
+                <div class="spinner"></div>
+            </div>
+        </div>
+        
+        <nav> 
+            <a href="/fyp/">Início</a> 
+            <a href="/createpost/">Criar Post</a> 
+            <a href="/store/" class="active">🛍️ Loja</a>
+            <a href="#" id="nav-meu-perfil">Meu Perfil</a> 
+        </nav> 
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            auth: {
+                storage: window.localStorage,
+                persistSession: true,
+                autoRefreshToken: true,
+            }
+        });
+
+        // 🍬 CATÁLOGO DE PRODUTOS VIRTUAIS
+        const PRODUTOS_LOJA = [
+            {
+                id: 'verificado',
+                nome: 'Selo Verificado',
+                descricao: 'Ganhe o selo oficial de verificado ao lado do seu nome em todo o Doce de Leite e destaque-se no caldeirão!',
+                preco: 1500,
+                iconeHtml: '<img src="/verify.png" alt="Verificado">',
+                colunaBanco: 'is_verified',
+                jaPossui: (perfil) => Boolean(perfil.is_verified),
+                payloadUpdate: () => ({ is_verified: true })
+            },
+            {
+                id: 'ddl_plus',
+                nome: 'Doce de Leite Plus',
+                descricao: 'Navegue pelo feed sem interrupções! Remove todos os anúncios intercalados da sua linha do tempo.',
+                preco: 2500,
+                iconeHtml: '🍮',
+                colunaBanco: 'is_plus',
+                jaPossui: (perfil) => Boolean(perfil.is_plus || perfil.isPlus),
+                payloadUpdate: () => ({ is_plus: true })
+            },
+            {
+                id: 'membro_vip',
+                nome: 'Destaque Caramelo',
+                descricao: 'Receba uma dose extra de prestígio e mostre que você apoia a comunidade Doce de Leite.',
+                preco: 800,
+                iconeHtml: '✨',
+                colunaBanco: 'has_caramel_badge',
+                jaPossui: (perfil) => Boolean(perfil.has_caramel_badge),
+                payloadUpdate: () => ({ has_caramel_badge: true })
+            }
+        ];
+
+        let usuarioAtual = null;
+        let perfilAtual = null;
+
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3500);
+        }
+
+        async function iniciarLoja() {
+            const storeContent = document.getElementById('store-content');
+            const navMeuPerfil = document.getElementById('nav-meu-perfil');
+
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session || !session.user) {
+                storeContent.innerHTML = `
+                    <div style="text-align: center; margin-top: 50px; color: #8d6e63;">
+                        <p style="margin-bottom: 16px;">Você precisa entrar na sua conta para acessar a lojinha! 🍮</p>
+                        <a href="/login/" style="background: #8d6e63; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;">Fazer Login</a>
+                    </div>
+                `;
+                return;
+            }
+
+            usuarioAtual = session.user;
+
+            const { data: perfil, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', usuarioAtual.id)
+                .single();
+
+            if (error || !perfil) {
+                storeContent.innerHTML = `<div style="text-align: center; margin-top: 40px; color: #8d6e63;">Erro ao carregar seu perfil e saldo de doces.</div>`;
+                return;
+            }
+
+            perfilAtual = perfil;
+            if (navMeuPerfil && perfil.username) {
+                navMeuPerfil.href = `/u/?q=${encodeURIComponent(perfil.username)}`;
+            }
+
+            renderizarLoja();
+        }
+
+        function renderizarLoja() {
+            const storeContent = document.getElementById('store-content');
+            // Usando candys_count para o saldo atual
+            const saldoDoces = Number(perfilAtual.candys_count || 0);
+
+            let cardsHtml = '';
+
+            for (const prod of PRODUTOS_LOJA) {
+                const adquirido = prod.jaPossui(perfilAtual);
+                const temSaldo = saldoDoces >= prod.preco;
+
+                let textoBotao = `Comprar por ${prod.preco} 🍬`;
+                let classeBotao = 'btn-buy';
+                let disabledAttr = '';
+
+                if (adquirido) {
+                    textoBotao = '✅ Já adquirido';
+                    classeBotao = 'btn-buy owned';
+                    disabledAttr = 'disabled';
+                } else if (!temSaldo) {
+                    textoBotao = `Faltam ${prod.preco - saldoDoces} 🍬`;
+                    disabledAttr = 'disabled';
+                }
+
+                cardsHtml += `
+                    <div class="product-card">
+                        <div>
+                            <div class="product-header">
+                                <div class="product-icon">${prod.iconeHtml}</div>
+                                <div>
+                                    <div class="product-title">${prod.nome}</div>
+                                    <div class="product-price">🍬 ${prod.preco} doces</div>
+                                </div>
+                            </div>
+                            <p class="product-desc">${prod.descricao}</p>
+                        </div>
+                        <button 
+                            class="${classeBotao}" 
+                            id="btn-prod-${prod.id}" 
+                            ${disabledAttr}
+                            onclick="comprarProduto('${prod.id}')">
+                            ${textoBotao}
+                        </button>
+                    </div>
+                `;
+            }
+
+            storeContent.innerHTML = `
+                <div class="balance-card">
+                    <div class="balance-info">
+                        <span>Seu saldo atual</span>
+                        <div class="balance-value" id="saldo-display">🍬 ${saldoDoces}</div>
+                    </div>
+                    <a href="/yourcandys" class="balance-btn">+ Ganhar doces</a>
+                </div>
+
+                <h2 class="section-title">✨ Itens Virtuais</h2>
+                <div class="products-grid">
+                    ${cardsHtml}
+                </div>
+            `;
+        }
+
+        window.comprarProduto = async function(produtoId) {
+            const produto = PRODUTOS_LOJA.find(p => p.id === produtoId);
+            if (!produto || !perfilAtual) return;
+
+            if (produto.jaPossui(perfilAtual)) {
+                mostrarToast('Você já possui este item! 😎');
+                return;
+            }
+
+            // Busca o saldo mais recente direto no banco antes de descontar (usando candys_count)
+            const { data: perfilFresco, error: errBusca } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', usuarioAtual.id)
+                .single();
+
+            if (errBusca || !perfilFresco) {
+                mostrarToast('Erro ao verificar seu saldo. Tente novamente.');
+                return;
+            }
+
+            const saldoReal = Number(perfilFresco.candys_count || 0);
+
+            if (saldoReal < produto.preco) {
+                mostrarToast(`Saldo insuficiente! Você precisa de ${produto.preco} 🍬.`);
+                perfilAtual = perfilFresco;
+                renderizarLoja();
+                return;
+            }
+
+            const btn = document.getElementById(`btn-prod-${produto.id}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Processando...';
+            }
+
+            const novoSaldo = saldoReal - produto.preco;
+            const dadosAtualizacao = {
+                candys_count: novoSaldo,
+                ...produto.payloadUpdate() // Ex: { is_verified: true }
+            };
+
+            const { error: errUpdate } = await supabase
+                .from('profiles')
+                .update(dadosAtualizacao)
+                .eq('id', usuarioAtual.id);
+
+            if (errUpdate) {
+                console.error(errUpdate);
+                mostrarToast('Erro ao concluir compra: ' + errUpdate.message);
+                renderizarLoja();
+                return;
+            }
+
+            // Atualiza estado local e re-renderiza
+            perfilAtual = { ...perfilFresco, ...dadosAtualizacao };
+            mostrarToast(`🎉 Parabéns! Você adquiriu: ${produto.nome}! (-${produto.preco} 🍬)`);
+            renderizarLoja();
+        };
+
+        iniciarLoja();
+    </script>
+</body>
+</html>
