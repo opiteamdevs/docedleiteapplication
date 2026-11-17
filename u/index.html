@@ -451,7 +451,9 @@
             const badgeTeam = perfil.isTeam 
                 ? `<div class="team-badge">🛡️ O usuário faz parte da equipe do DL</div>` 
                 : '';
-
+            const badgeCaramelo = perfil.has_caramel_badge 
+                ? `<div class="team-badge" style="background-color: #ffb74d; color: #3e2723; border-color: #ffa726;">✨ Destaque Caramelo</div>` 
+                : '';
             container.innerHTML = `
                 <div class="profile-header">
                     ${badgeTeam}
