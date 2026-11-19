@@ -183,7 +183,6 @@
             <li>✨ Selo verificado de perfil Plus</li>
             <li>🚫 Feed livre de anúncios intercalados</li>
             <li>🚀 Prioridade nas postagens e interações</li>
-            <li>🍯 Válido por 30 dias completos</li>
         </ul>
 
         <button id="btnAssinar" onclick="pagarComCakto()">Assinar Agora (R$ 20,00)</button>
@@ -211,23 +210,20 @@
         async function checarPlusNoBanco(userId) {
             const { data: profile, error } = await supabase
                 .from('profiles')
-                .select('is_plus, plus_expires_at')
+                .select('is_plus')
                 .eq('id', userId)
                 .single();
 
             if (error) throw error;
 
-            if (!profile?.is_plus) return false;
-            if (!profile.plus_expires_at) return true;
-
-            return new Date(profile.plus_expires_at) > new Date();
+            return Boolean(profile?.is_plus);
         }
 
         function exibirSucesso() {
             btnAssinar.style.display = 'none';
             btnVerificar.style.display = 'none';
             feedback.style.color = '#4ade80';
-            feedback.innerHTML = '<strong>Sucesso!💥🍮</strong><br>Você pagou o Plus, aproveite o plus por esse mês todo!';
+            feedback.innerHTML = '<strong>Sucesso!💥🍮</strong><br>Seu acesso Plus com a Cakto está ativo!';
 
             setTimeout(() => {
                 window.location.href = 'index.html';
@@ -246,10 +242,9 @@
 
                 if (manual) {
                     feedback.style.color = '#e5a96c';
-                    feedback.textContent = 'Consultando confirmação do pagamento...';
+                    feedback.textContent = 'Consultando confirmação do pagamento na Cakto...';
                 }
 
-                // Faz até 10 tentativas (20 segundos) aguardando o webhook da Cakto confirmar no Supabase
                 const tentativas = manual ? 3 : 10;
                 for (let i = 0; i < tentativas; i++) {
                     const ativo = await checarPlusNoBanco(session.user.id);
@@ -276,7 +271,7 @@
             const { data: { session } } = await supabase.auth.getSession();
 
             if (session?.user?.email) {
-                emailAviso.textContent = `Use o mesmo e-mail da sua conta (${session.user.email}) no checkout.`;
+                emailAviso.textContent = `Use o mesmo e-mail da sua conta (${session.user.email}) no checkout da Cakto.`;
             }
 
             const params = new URLSearchParams(window.location.search);
@@ -303,14 +298,13 @@
                     return;
                 }
 
-                // Se já estiver com Plus ativo, não cobra duas vezes
                 const jaEhPlus = await checarPlusNoBanco(session.user.id);
                 if (jaEhPlus) {
                     exibirSucesso();
                     return;
                 }
 
-                feedback.textContent = 'Redirecionando para o checkout seguro da Cakto...';
+                feedback.textContent = 'Redirecionando para o checkout da Cakto...';
 
                 const checkoutUrl = new URL(CAKTO_CHECKOUT_URL);
                 if (session.user.email) {
