@@ -1,47 +1,54 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark-theme">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doce de Leite - Assinar Plano Plus</title>
-    <!-- API Oficial do Stripe -->
-    <script src="https://js.stripe.com/v3/"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
-            background: linear-gradient(135deg, #fdfbf7 0%, #f4e8d8 100%);
+        html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
+            font-family: 'Bricolage Grotesque', sans-serif !important;
+        }
+
+        body.dark-theme {
+            background: radial-gradient(circle at top, #2a1b12 0%, #160e09 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #4a3b32;
+            color: #f6eadc;
             padding: 1rem;
         }
 
         .container {
-            background: #ffffff;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(139, 94, 60, 0.12);
+            background: #22160f;
+            padding: 2.25rem 1.75rem;
+            border-radius: 20px;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
             width: 100%;
             max-width: 420px;
             text-align: center;
-            border: 1px solid #f0e2d0;
+            border: 1px solid #3d281c;
         }
 
         .badge {
-            background: #f4e8d8;
-            color: #8c6d53;
+            background: rgba(217, 155, 91, 0.16);
+            color: #e5a96c;
+            border: 1px solid rgba(217, 155, 91, 0.35);
             font-size: 0.75rem;
-            font-weight: 700;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+            font-weight: 800;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
             text-transform: uppercase;
             letter-spacing: 1px;
             display: inline-block;
@@ -49,51 +56,66 @@
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.85rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            color: #fff3e4;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #c7ad94;
             margin-bottom: 0.5rem;
-            color: #6b4423;
         }
 
         .price {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #b87333;
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #e59a4c;
             margin: 1rem 0;
         }
 
         .price span {
-            font-size: 0.9rem;
-            color: #8c6d53;
-            font-weight: normal;
+            font-size: 0.95rem;
+            color: #bfa38a;
+            font-weight: 600;
         }
 
         ul {
             text-align: left;
             list-style: none;
             margin: 1.5rem 0;
-            color: #6b513e;
+            color: #ead8c5;
             font-size: 0.95rem;
+            background: #1a100b;
+            padding: 1.1rem 1.2rem;
+            border-radius: 14px;
+            border: 1px solid #332016;
         }
 
         ul li {
             margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
+        }
+
+        ul li:last-child {
+            margin-bottom: 0;
         }
 
         button {
             width: 100%;
-            padding: 0.85rem;
+            padding: 0.95rem;
             background: linear-gradient(135deg, #d99b5b 0%, #b87333 100%);
-            color: white;
+            color: #fffaf3;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 800;
             cursor: pointer;
             transition: opacity 0.2s, transform 0.1s;
-            box-shadow: 0 4px 12px rgba(184, 115, 51, 0.25);
+            box-shadow: 0 6px 18px rgba(184, 115, 51, 0.32);
         }
 
         button:hover {
@@ -104,142 +126,206 @@
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            margin-top: 0.75rem;
+            background: transparent;
+            border: 1px solid #4e3424;
+            color: #e2c5a8;
+            box-shadow: none;
+            font-weight: 700;
+            display: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(217, 155, 91, 0.08);
         }
 
         #feedback {
             margin-top: 1rem;
             font-size: 0.95rem;
-            font-weight: 500;
-            line-height: 1.4;
+            font-weight: 600;
+            line-height: 1.45;
+            min-height: 1.4rem;
+        }
+
+        .email-note {
+            margin-top: 0.85rem;
+            font-size: 0.8rem;
+            color: #a88c73;
         }
 
         .back-link {
             display: inline-block;
             margin-top: 1.5rem;
-            color: #8c6d53;
+            color: #c7ad94;
             text-decoration: none;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .back-link:hover {
+            color: #f6eadc;
             text-decoration: underline;
         }
     </style>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
-<style id="ddl-global-font">
-  html, body, button, input, textarea, select, option, a, label, h1, h2, h3, h4, h5, h6, p, span, div, li, small, strong, b, em, nav, header, footer {
-    font-family: 'Bricolage Grotesque', sans-serif !important;
-  }
-</style>
 </head>
-<body>
+<body class="dark-theme">
     <div class="container">
         <span class="badge">Exclusivo</span>
-        <h1>Doce de Leite Plus</h1>
+        <h1>Doce de Leite Plus 🍮</h1>
+        <p class="subtitle">Apoie a comunidade e navegue sem interrupções</p>
         <div class="price">R$ 20,00 <span>/mês</span></div>
-        
+
         <ul>
             <li>✨ Selo verificado de perfil Plus</li>
+            <li>🚫 Feed livre de anúncios intercalados</li>
             <li>🚀 Prioridade nas postagens e interações</li>
             <li>🍯 Válido por 30 dias completos</li>
         </ul>
 
-        <button id="btnAssinar" onclick="pagarComStripe()">Assinar Agora (R$ 20,00)</button>
+        <button id="btnAssinar" onclick="pagarComCakto()">Assinar Agora (R$ 20,00)</button>
+        <button id="btnVerificar" class="btn-secondary" onclick="verificarStatusPlus(true)">Já paguei — Verificar agora 🔄</button>
+
         <p id="feedback"></p>
+        <p class="email-note" id="emailAviso"></p>
 
         <a href="index.html" class="back-link">← Voltar para a página inicial</a>
     </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, STRIPE_PUBLIC_KEY, STRIPE_PRICE_ID } from '/config.js';
+        import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '/config.js';
 
-        
-
+        const CAKTO_CHECKOUT_URL = 'https://pay.cakto.com.br/hveiuz2_1344764';
         const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-        const stripe = Stripe(STRIPE_PUBLIC_KEY);
 
-        // Ao carregar a página, verifica se o usuário voltou com sucesso do Stripe
+        const feedback = document.getElementById('feedback');
+        const btnAssinar = document.getElementById('btnAssinar');
+        const btnVerificar = document.getElementById('btnVerificar');
+        const emailAviso = document.getElementById('emailAviso');
+
+        // Consulta o status real no Supabase (atualizado pelo Webhook da Cakto)
+        async function checarPlusNoBanco(userId) {
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('is_plus, plus_expires_at')
+                .eq('id', userId)
+                .single();
+
+            if (error) throw error;
+
+            if (!profile?.is_plus) return false;
+            if (!profile.plus_expires_at) return true;
+
+            return new Date(profile.plus_expires_at) > new Date();
+        }
+
+        function exibirSucesso() {
+            btnAssinar.style.display = 'none';
+            btnVerificar.style.display = 'none';
+            feedback.style.color = '#4ade80';
+            feedback.innerHTML = '<strong>Sucesso!💥🍮</strong><br>Você pagou o Plus, aproveite o plus por esse mês todo!';
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 4000);
+        }
+
+        window.verificarStatusPlus = async function (manual = false) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.user) {
+                    feedback.style.color = '#f87171';
+                    feedback.textContent = 'Você precisa estar logado para verificar sua assinatura!';
+                    setTimeout(() => window.location.href = '/acesso/login/', 2000);
+                    return;
+                }
+
+                if (manual) {
+                    feedback.style.color = '#e5a96c';
+                    feedback.textContent = 'Consultando confirmação do pagamento...';
+                }
+
+                // Faz até 10 tentativas (20 segundos) aguardando o webhook da Cakto confirmar no Supabase
+                const tentativas = manual ? 3 : 10;
+                for (let i = 0; i < tentativas; i++) {
+                    const ativo = await checarPlusNoBanco(session.user.id);
+                    if (ativo) {
+                        exibirSucesso();
+                        return;
+                    }
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                }
+
+                feedback.style.color = '#fbbf24';
+                feedback.innerHTML = 'Ainda aguardando a confirmação do pagamento pela Cakto ⏳<br>Se você pagou via Pix, aguarde alguns segundos e clique em <strong>Verificar agora</strong>.';
+                btnVerificar.style.display = 'block';
+                btnAssinar.disabled = false;
+            } catch (err) {
+                feedback.style.color = '#f87171';
+                feedback.textContent = 'Erro ao verificar seu status Plus. Tente novamente em instantes.';
+                btnVerificar.style.display = 'block';
+                btnAssinar.disabled = false;
+            }
+        };
+
         window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session?.user?.email) {
+                emailAviso.textContent = `Use o mesmo e-mail da sua conta (${session.user.email}) no checkout.`;
+            }
+
             const params = new URLSearchParams(window.location.search);
             if (params.get('sucesso') === 'true') {
-                const feedback = document.getElementById('feedback');
-                const btn = document.getElementById('btnAssinar');
-                btn.style.display = 'none'; // Esconde o botão após pagar
-
-                feedback.style.color = '#27ae60';
-                feedback.textContent = 'Processando sua assinatura...';
-
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session && session.user) {
-                        // Calcula a data de expiração para daqui a 30 dias
-                        const dataExpiracao = new Date();
-                        dataExpiracao.setDate(dataExpiracao.getDate() + 30);
-
-                        // Atualiza o banco com o status plus e a data limite de 1 mês
-                        const { error } = await supabase
-                            .from('profiles')
-                            .update({ 
-                                is_plus: true,
-                                plus_expires_at: dataExpiracao.toISOString() 
-                            })
-                            .eq('id', session.user.id);
-
-                        if (error) throw error;
-
-                        // Mensagem exata solicitada na tela
-                        feedback.innerHTML = '<strong>Sucesso!💥🍮</strong><br>Você pagou o Plus, aproveite o plus por esse mês todo!';
-                        
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 4000);
-                    }
-                } catch (err) {
-                    feedback.style.color = '#b85133';
-                    feedback.textContent = 'Erro ao ativar o seu Plus no banco de dados. Contate o suporte.';
-                }
+                btnAssinar.style.display = 'none';
+                feedback.style.color = '#4ade80';
+                feedback.textContent = 'Confirmando sua assinatura com a Cakto...';
+                await window.verificarStatusPlus(false);
             }
         });
 
-        window.pagarComStripe = async function() {
-            const feedback = document.getElementById('feedback');
-            const btn = document.getElementById('btnAssinar');
-            
-            feedback.style.color = '#8c6d53';
+        window.pagarComCakto = async function () {
+            feedback.style.color = '#c7ad94';
             feedback.textContent = 'Verificando sua sessão...';
-            btn.disabled = true;
+            btnAssinar.disabled = true;
 
             try {
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                
+
                 if (sessionError || !session || !session.user) {
-                    feedback.style.color = '#b85133';
+                    feedback.style.color = '#f87171';
                     feedback.textContent = 'Você precisa estar logado para assinar!';
                     setTimeout(() => window.location.href = '/acesso/login/', 2000);
                     return;
                 }
 
-                feedback.textContent = 'Redirecionando para o Stripe...';
+                // Se já estiver com Plus ativo, não cobra duas vezes
+                const jaEhPlus = await checarPlusNoBanco(session.user.id);
+                if (jaEhPlus) {
+                    exibirSucesso();
+                    return;
+                }
 
-                const { error } = await stripe.redirectToCheckout({
-                    lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
-                    mode: 'payment',
-                    successUrl: `${window.location.href.split('?')[0]}?sucesso=true`,
-                    cancelUrl: window.location.href,
-                    clientReferenceId: session.user.id
-                });
+                feedback.textContent = 'Redirecionando para o checkout seguro da Cakto...';
 
-                if (error) throw error;
+                const checkoutUrl = new URL(CAKTO_CHECKOUT_URL);
+                if (session.user.email) {
+                    checkoutUrl.searchParams.set('email', session.user.email);
+                }
+                const nomeUsuario = session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+                if (nomeUsuario) {
+                    checkoutUrl.searchParams.set('name', nomeUsuario);
+                }
 
+                window.location.href = checkoutUrl.toString();
             } catch (err) {
-                feedback.style.color = '#b85133';
-                feedback.textContent = err.message || 'Erro ao conectar com o Stripe.';
-                btn.disabled = false;
+                feedback.style.color = '#f87171';
+                feedback.textContent = err.message || 'Erro ao abrir o checkout da Cakto.';
+                btnAssinar.disabled = false;
             }
         };
     </script>
