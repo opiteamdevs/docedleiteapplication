@@ -390,6 +390,7 @@
                 id: 'verificado',
                 nome: 'Selo Verificado',
                 descricao: 'Ganhe o selo oficial de verificado ao lado do seu nome em todo o Doce de Leite e destaque-se no caldeirão!',
+                tipoPagamento: 'doces',
                 preco: 1500,
                 iconeHtml: '<img src="/verify.png" alt="Verificado">',
                 colunaBanco: 'is_verified',
@@ -400,16 +401,18 @@
                 id: 'ddl_plus',
                 nome: 'Doce de Leite Plus',
                 descricao: 'Navegue pelo feed sem interrupções! Remove todos os anúncios intercalados da sua linha do tempo.',
-                preco: 2500,
+                tipoPagamento: 'externo',
+                precoTexto: 'R$ 20,00',
+                urlDestino: '/plus',
                 iconeHtml: '🍮',
                 colunaBanco: 'is_plus',
-                jaPossui: (perfil) => Boolean(perfil.is_plus || perfil.isPlus),
-                payloadUpdate: () => ({ is_plus: true })
+                jaPossui: (perfil) => Boolean(perfil.is_plus || perfil.isPlus)
             },
             {
                 id: 'membro_vip',
                 nome: 'Destaque Caramelo',
                 descricao: 'Receba uma dose extra de prestígio e mostre que você apoia a comunidade Doce de Leite.',
+                tipoPagamento: 'doces',
                 preco: 800,
                 iconeHtml: '✨',
                 colunaBanco: 'has_caramel_badge',
@@ -476,9 +479,11 @@
 
             for (const prod of PRODUTOS_LOJA) {
                 const adquirido = prod.jaPossui(perfilAtual);
-                const temSaldo = saldoDoces >= prod.preco;
+                const isExterno = prod.tipoPagamento === 'externo';
+                const temSaldo = isExterno ? true : saldoDoces >= prod.preco;
 
-                let textoBotao = `Comprar por ${prod.preco} 🍬`;
+                let precoExibicao = isExterno ? `💳 ${prod.precoTexto}` : `🍬 ${prod.preco} doces`;
+                let textoBotao = isExterno ? `Assinar por ${prod.precoTexto}` : `Comprar por ${prod.preco} 🍬`;
                 let classeBotao = 'btn-buy';
                 let disabledAttr = '';
 
@@ -498,7 +503,7 @@
                                 <div class="product-icon">${prod.iconeHtml}</div>
                                 <div>
                                     <div class="product-title">${prod.nome}</div>
-                                    <div class="product-price">🍬 ${prod.preco} doces</div>
+                                    <div class="product-price">${precoExibicao}</div>
                                 </div>
                             </div>
                             <p class="product-desc">${prod.descricao}</p>
@@ -536,6 +541,12 @@
 
             if (produto.jaPossui(perfilAtual)) {
                 mostrarToast('Você já possui este item! 😎');
+                return;
+            }
+
+            // Se for produto com página própria/pagamento externo, redireciona direto
+            if (produto.tipoPagamento === 'externo' && produto.urlDestino) {
+                window.location.href = produto.urlDestino;
                 return;
             }
 
